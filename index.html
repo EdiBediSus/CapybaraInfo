@@ -433,7 +433,7 @@ canvas {
 <script>
 (function(){
 
-  // Only show mobile controls on touch devices
+  // Show controls only on mobile
   function isTouch() {
     return ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
   }
@@ -448,17 +448,16 @@ canvas {
   const stick = document.getElementById('stick');
   const shootBtn = document.getElementById('shootButton');
 
+  window.keys = window.keys || { w:false, a:false, s:false, d:false, space:false };
+
   // --- Joystick ---
-  const keysMap = { w:'w', a:'a', s:'s', d:'d' };
   let activeId = null;
   const outerRadius = 70;
   const center = { x:0, y:0 };
-  let pressedKeys = {};
 
   function resetStick() {
     stick.style.transform = 'translate(-50%, -50%)';
-    for (let k in pressedKeys) releaseKey(k);
-    pressedKeys = {};
+    window.keys.w = window.keys.a = window.keys.s = window.keys.d = false;
     activeId = null;
   }
 
@@ -473,23 +472,15 @@ canvas {
 
     stick.style.transform = `translate(calc(-50% + ${sx}px), calc(-50% + ${sy}px))`;
 
-    // Deadzone
+    // deadzone
     const nx = sx / outerRadius;
     const ny = sy / outerRadius;
     const t = 0.35;
 
-    const newKeys = {
-      w: ny < -t,
-      s: ny > t,
-      a: nx < -t,
-      d: nx > t
-    };
-
-    for (let k in newKeys) {
-      if (newKeys[k] && !pressedKeys[k]) pressKey(k);
-      if (!newKeys[k] && pressedKeys[k]) releaseKey(k);
-    }
-    pressedKeys = newKeys;
+    window.keys.w = ny < -t;
+    window.keys.s = ny > t;
+    window.keys.a = nx < -t;
+    window.keys.d = nx > t;
   }
 
   joy.addEventListener("touchstart", e => {
@@ -520,26 +511,19 @@ canvas {
   // --- Shoot Button ---
   shootBtn.addEventListener('touchstart', e => {
     e.preventDefault();
-    canvas.dispatchEvent(new MouseEvent('mousedown', { bubbles:true }));
+    window.keys.space = true; // START shooting
   }, {passive:false});
 
   shootBtn.addEventListener('touchend', e => {
     e.preventDefault();
-    canvas.dispatchEvent(new MouseEvent('mouseup', { bubbles:true }));
+    window.keys.space = false; // STOP shooting
   }, {passive:false});
-
-  // --- Helper functions to simulate keyboard ---
-  function pressKey(k) {
-    window.dispatchEvent(new KeyboardEvent('keydown', { key:k }));
-  }
-  function releaseKey(k) {
-    window.dispatchEvent(new KeyboardEvent('keyup', { key:k }));
-  }
 
 })();
 </script>
 
-</script>
+
+
 
 
 
