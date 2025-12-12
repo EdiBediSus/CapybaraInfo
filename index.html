@@ -381,13 +381,13 @@ canvas {
 
 <canvas id="game"></canvas>
 
-<div id="mobileControls">...</div>
-<button id="shootBtn"></button>
+<div id="mobileControls">
+    <div id="joy" class="joystick">
+        <div id="stick" class="stick"></div>
+    </div>
 
-<!-- ABIA APOI începe scriptul -->
-<script>
-(function() {
-   const shootBtn = document.getElementById("shootBtn");
+    <div id="shootBtn" class="btnShoot">FIRE</div>
+</div>
 
 <!-- MOBILE CONTROLS -->
 <div id="mobileControls" style="
@@ -434,6 +434,18 @@ canvas {
 ">
 </button>
 
+<script>
+(function() {
+
+   const canvas = document.getElementById("game");
+   const shootBtn = document.getElementById("shootBtn");
+   const joy = document.getElementById("joy");
+   const stick = document.getElementById("stick");
+
+   // aici tot codul joystick + shoot
+
+})();
+</script>
 
 
 <script>
