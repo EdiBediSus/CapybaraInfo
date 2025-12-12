@@ -441,31 +441,34 @@ canvas {
     return;
   }
 
-  // --- FULLSCREEN PORTRAIT STYLE ---
-  document.documentElement.style.height = "100%";
-  document.body.style.height = "100%";
-  document.body.style.margin = 0;
-  document.body.style.overflow = "hidden";
-  if (canvas) {
-    canvas.style.width = "100vw";
-    canvas.style.height = "100vh";
+  // --- FULLSCREEN PORTRAIT FIT (maintain aspect ratio) ---
+  function resizeCanvas() {
+    if (!canvas) return;
+    const aspect = 16/9; // Replace with your game’s aspect ratio
+    const windowWidth = window.innerWidth;
+    const windowHeight = window.innerHeight;
+    let width = windowWidth;
+    let height = windowWidth / aspect;
+
+    if (height > windowHeight) {
+      height = windowHeight;
+      width = height * aspect;
+    }
+
+    canvas.style.width = width + "px";
+    canvas.style.height = height + "px";
+    canvas.style.position = "absolute";
+    canvas.style.left = (windowWidth - width)/2 + "px";
+    canvas.style.top = (windowHeight - height)/2 + "px";
     canvas.style.touchAction = "none"; // prevent default gestures
   }
 
-  // --- SHOOT BUTTON ---
-  const shootBtn = document.getElementById('shootButton');
-  shootBtn.addEventListener('touchstart', e => {
-    e.preventDefault();
-    if (canvas) {
-      const clickEvent = new MouseEvent('click', { bubbles:true, cancelable:true, view:window });
-      canvas.dispatchEvent(clickEvent);
-    }
-  }, {passive:false});
+  window.addEventListener('resize', resizeCanvas);
+  resizeCanvas();
 
   // --- JOYSTICK ---
   const joy = document.getElementById('joy');
   const stick = document.getElementById('stick');
-
   let activeId = null;
   const outerRadius = 70;
   const center = { x:0, y:0 };
@@ -513,6 +516,9 @@ canvas {
     if (ny > t) pressKey('s');
     if (nx < -t) pressKey('a');
     if (nx > t) pressKey('d');
+
+    // Optional: Save angle to use for shooting direction
+    window.joyAngle = angle;
   }
 
   joy.addEventListener('touchstart', e => {
@@ -539,6 +545,18 @@ canvas {
       if (t.identifier === activeId) resetStick();
     }
   });
+
+  // --- SHOOT BUTTON ---
+  const shootBtn = document.getElementById('shootButton');
+  shootBtn.addEventListener('touchstart', e => {
+    e.preventDefault();
+    if (canvas) {
+      // You can trigger a click event or call a shoot function directly
+      // Example: send angle to game
+      const event = new CustomEvent('mobileShoot', { detail: { angle: window.joyAngle || 0 } });
+      canvas.dispatchEvent(event);
+    }
+  }, {passive:false});
 
 })();
 </script>
