@@ -432,95 +432,113 @@ canvas {
 
 <script>
 (function(){
-    // Detect touch device
-    const isTouch = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
-    if(!isTouch){
-        document.getElementById('mobileControls').style.display = 'none';
-        document.getElementById('shootButton').style.display = 'none';
-        return;
+
+  // Only show mobile controls on touch devices
+  function isTouch() {
+    return ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+  }
+
+  if (!isTouch()) {
+    document.getElementById('mobileControls').style.display = 'none';
+    document.getElementById('shootButton').style.display = 'none';
+    return;
+  }
+
+  const joy = document.getElementById('joy');
+  const stick = document.getElementById('stick');
+  const shootBtn = document.getElementById('shootButton');
+
+  // --- Joystick ---
+  const keysMap = { w:'w', a:'a', s:'s', d:'d' };
+  let activeId = null;
+  const outerRadius = 70;
+  const center = { x:0, y:0 };
+  let pressedKeys = {};
+
+  function resetStick() {
+    stick.style.transform = 'translate(-50%, -50%)';
+    for (let k in pressedKeys) releaseKey(k);
+    pressedKeys = {};
+    activeId = null;
+  }
+
+  function moveStick(x, y) {
+    const dx = x - center.x;
+    const dy = y - center.y;
+    const dist = Math.min(Math.hypot(dx, dy), outerRadius);
+    const angle = Math.atan2(dy, dx);
+
+    const sx = Math.cos(angle) * dist;
+    const sy = Math.sin(angle) * dist;
+
+    stick.style.transform = `translate(calc(-50% + ${sx}px), calc(-50% + ${sy}px))`;
+
+    // Deadzone
+    const nx = sx / outerRadius;
+    const ny = sy / outerRadius;
+    const t = 0.35;
+
+    const newKeys = {
+      w: ny < -t,
+      s: ny > t,
+      a: nx < -t,
+      d: nx > t
+    };
+
+    for (let k in newKeys) {
+      if (newKeys[k] && !pressedKeys[k]) pressKey(k);
+      if (!newKeys[k] && pressedKeys[k]) releaseKey(k);
     }
+    pressedKeys = newKeys;
+  }
 
-    // --- GLOBAL KEYS ---
-    window.keys = window.keys || { w:false, a:false, s:false, d:false };
-    const keys = window.keys;
+  joy.addEventListener("touchstart", e => {
+    e.preventDefault();
+    const t = e.changedTouches[0];
+    activeId = t.identifier;
 
-    const joy = document.getElementById('joy');
-    const stick = document.getElementById('stick');
-    const shootBtn = document.getElementById('shootButton');
-    const canvas = document.querySelector('canvas'); // Make sure this is your game canvas
+    const rect = joy.getBoundingClientRect();
+    center.x = rect.left + rect.width / 2;
+    center.y = rect.top + rect.height / 2;
 
-    // --- JOYSTICK LOGIC ---
-    let activeId = null;
-    const outerRadius = 70;
-    const center = { x:0, y:0 };
+    moveStick(t.clientX, t.clientY);
+  }, {passive:false});
 
-    function resetStick() {
-        stick.style.transform = 'translate(-50%, -50%)';
-        keys.w = keys.a = keys.s = keys.d = false;
-        activeId = null;
+  joy.addEventListener("touchmove", e => {
+    e.preventDefault();
+    for (let t of e.changedTouches) {
+      if (t.identifier === activeId) moveStick(t.clientX, t.clientY);
     }
+  }, {passive:false});
 
-    function moveStick(x, y) {
-        const dx = x - center.x;
-        const dy = y - center.y;
-        const dist = Math.min(Math.hypot(dx, dy), outerRadius);
-        const angle = Math.atan2(dy, dx);
-
-        const sx = Math.cos(angle) * dist;
-        const sy = Math.sin(angle) * dist;
-
-        stick.style.transform = `translate(calc(-50% + ${sx}px), calc(-50% + ${sy}px))`;
-
-        const nx = sx / outerRadius;
-        const ny = sy / outerRadius;
-        const t = 0.35; // deadzone
-
-        keys.w = ny < -t;
-        keys.s = ny > t;
-        keys.a = nx < -t;
-        keys.d = nx > t;
+  joy.addEventListener("touchend", e => {
+    for (let t of e.changedTouches) {
+      if (t.identifier === activeId) resetStick();
     }
+  });
 
-    joy.addEventListener("touchstart", e => {
-        e.preventDefault();
-        const t = e.changedTouches[0];
-        activeId = t.identifier;
+  // --- Shoot Button ---
+  shootBtn.addEventListener('touchstart', e => {
+    e.preventDefault();
+    canvas.dispatchEvent(new MouseEvent('mousedown', { bubbles:true }));
+  }, {passive:false});
 
-        const rect = joy.getBoundingClientRect();
-        center.x = rect.left + rect.width / 2;
-        center.y = rect.top + rect.height / 2;
+  shootBtn.addEventListener('touchend', e => {
+    e.preventDefault();
+    canvas.dispatchEvent(new MouseEvent('mouseup', { bubbles:true }));
+  }, {passive:false});
 
-        moveStick(t.clientX, t.clientY);
-    }, {passive:false});
-
-    joy.addEventListener("touchmove", e => {
-        e.preventDefault();
-        for (let t of e.changedTouches) {
-            if (t.identifier === activeId) moveStick(t.clientX, t.clientY);
-        }
-    }, {passive:false});
-
-    joy.addEventListener("touchend", e => {
-        for (let t of e.changedTouches) {
-            if (t.identifier === activeId) resetStick();
-        }
-    });
-
-    // --- SHOOT BUTTON LOGIC ---
-    shootBtn.addEventListener('touchstart', e => {
-        e.preventDefault();
-        // Trigger pointerdown or mousedown on canvas
-        const event = new PointerEvent('pointerdown', { bubbles: true });
-        canvas.dispatchEvent(event);
-    }, {passive:false});
-
-    shootBtn.addEventListener('touchend', e => {
-        e.preventDefault();
-        const event = new PointerEvent('pointerup', { bubbles: true });
-        canvas.dispatchEvent(event);
-    }, {passive:false});
+  // --- Helper functions to simulate keyboard ---
+  function pressKey(k) {
+    window.dispatchEvent(new KeyboardEvent('keydown', { key:k }));
+  }
+  function releaseKey(k) {
+    window.dispatchEvent(new KeyboardEvent('keyup', { key:k }));
+  }
 
 })();
+</script>
+
 </script>
 
 
