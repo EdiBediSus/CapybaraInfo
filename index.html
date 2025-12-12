@@ -5,6 +5,19 @@
 <meta charset="UTF-8" />
 <title>Slipper Attack</title>
 <style>
+
+/* Ascunde pe PC, arată pe mobil */
+#mobileControls, #shootBtn {
+    display: none;
+}
+
+@media (pointer: coarse) {
+    #mobileControls, #shootBtn {
+        display: block !important;
+    }
+}
+
+
 /* ------------------------------------- */
 /* CORE GAME STYLES */
 /* ------------------------------------- */
@@ -367,6 +380,14 @@ canvas {
 <input id="chatInput" placeholder="Type a message" />
 
 <canvas id="game"></canvas>
+
+<div id="mobileControls">...</div>
+<button id="shootBtn"></button>
+
+<!-- ABIA APOI începe scriptul -->
+<script>
+(function() {
+   const shootBtn = document.getElementById("shootBtn");
 
 <!-- MOBILE CONTROLS -->
 <div id="mobileControls" style="
