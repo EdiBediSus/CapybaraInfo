@@ -436,17 +436,25 @@ canvas {
 <script>
 (function(){
     const shootBtn = document.getElementById('shootButton');
+    const canvas = document.querySelector('canvas'); // sau elementul pe care se face click in joc
 
-    // Simulează apăsarea tastei Space
     function shootStart() {
-        window.keys = window.keys || {};
-        window.mousedown = true; // folosește aceeași key ca în joc
+        const event = new MouseEvent('mousedown', {
+            bubbles: true,
+            cancelable: true,
+        });
+        canvas.dispatchEvent(event);
     }
 
     function shootEnd() {
-        window.keys.space = false;
+        const event = new MouseEvent('mouseup', {
+            bubbles: true,
+            cancelable: true,
+        });
+        canvas.dispatchEvent(event);
     }
 
+    // Touch pentru mobil
     shootBtn.addEventListener('touchstart', e => {
         e.preventDefault();
         shootStart();
@@ -457,90 +465,21 @@ canvas {
         shootEnd();
     }, {passive:false});
 
+    // Mouse pentru desktop
+    shootBtn.addEventListener('mousedown', e => {
+        e.preventDefault();
+        shootStart();
+    });
+
+    shootBtn.addEventListener('mouseup', e => {
+        e.preventDefault();
+        shootEnd();
+    });
+
+    shootBtn.addEventListener('mouseleave', e => {
+        shootEnd();
+    });
 })();
-</script>
-
-<script>
-(function(){
-
-  // --- GLOBAL KEYS ---
-  window.keys = window.keys || { w:false, a:false, s:false, d:false };
-  const keys = window.keys;
-
-  const joy = document.getElementById('joy');
-  const stick = document.getElementById('stick');
-
-  // Detect touch device
-  function isTouch() {
-    return ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
-  }
-
-  if (!isTouch()) {
-    document.getElementById('mobileControls').style.display = 'none';
-    return;
-  }
-
-  // Joystick variables
-  let activeId = null;
-  const outerRadius = 70;
-  const center = { x:0, y:0 };
-
-  function resetStick() {
-    stick.style.transform = 'translate(-50%, -50%)';
-    keys.w = keys.a = keys.s = keys.d = false;
-    activeId = null;
-  }
-
-  function moveStick(x, y) {
-    const dx = x - center.x;
-    const dy = y - center.y;
-    const dist = Math.min(Math.hypot(dx, dy), outerRadius);
-    const angle = Math.atan2(dy, dx);
-
-    const sx = Math.cos(angle) * dist;
-    const sy = Math.sin(angle) * dist;
-
-    stick.style.transform = `translate(calc(-50% + ${sx}px), calc(-50% + ${sy}px))`;
-
-    // Map stick movement to keys
-    const nx = sx / outerRadius;
-    const ny = sy / outerRadius;
-    const t = 0.35; // deadzone threshold
-
-    keys.w = ny < -t;
-    keys.s = ny > t;
-    keys.a = nx < -t;
-    keys.d = nx > t;
-  }
-
-  joy.addEventListener("touchstart", e => {
-    e.preventDefault();
-    const t = e.changedTouches[0];
-    activeId = t.identifier;
-
-    const rect = joy.getBoundingClientRect();
-    center.x = rect.left + rect.width / 2;
-    center.y = rect.top + rect.height / 2;
-
-    moveStick(t.clientX, t.clientY);
-  }, {passive:false});
-
-  joy.addEventListener("touchmove", e => {
-    e.preventDefault();
-    for (let t of e.changedTouches) {
-      if (t.identifier === activeId) moveStick(t.clientX, t.clientY);
-    }
-  }, {passive:false});
-
-  joy.addEventListener("touchend", e => {
-    for (let t of e.changedTouches) {
-      if (t.identifier === activeId) resetStick();
-    }
-  });
-
-})();
-
-
 </script>
 
 
