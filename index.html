@@ -408,130 +408,87 @@ canvas {
     </div>
 </div>
 
-<div id="shootButton" style="
-    position: fixed;
-    bottom: 30px;
-    right: 20px;
-    width: 80px;
-    height: 80px;
-    background: rgba(255,255,255,0.07);
-    backdrop-filter: blur(6px);
-    border: 2px solid rgba(255,255,255,0.2);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-    color: white;
-    user-select: none;
-">
-    ⚡
-</div>
 
 <script>
 (function(){
 
-    // --- GLOBAL KEYS ---
-    window.keys = window.keys || { w:false, a:false, s:false, d:false };
-    const keys = window.keys;
+  // --- GLOBAL KEYS ---
+  window.keys = window.keys || { w:false, a:false, s:false, d:false };
+  const keys = window.keys;
 
-    const joy = document.getElementById('joy');
-    const stick = document.getElementById('stick');
-    const shootBtn = document.getElementById('shootButton');
-    const canvas = document.querySelector('canvas'); // Make sure this is your game canvas
+  const joy = document.getElementById('joy');
+  const stick = document.getElementById('stick');
 
-    // Detect touch device
-    function isTouch() {
-        return ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+  // Detect touch device
+  function isTouch() {
+    return ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+  }
+
+  if (!isTouch()) {
+    document.getElementById('mobileControls').style.display = 'none';
+    return;
+  }
+
+  // Joystick variables
+  let activeId = null;
+  const outerRadius = 70;
+  const center = { x:0, y:0 };
+
+  function resetStick() {
+    stick.style.transform = 'translate(-50%, -50%)';
+    keys.w = keys.a = keys.s = keys.d = false;
+    activeId = null;
+  }
+
+  function moveStick(x, y) {
+    const dx = x - center.x;
+    const dy = y - center.y;
+    const dist = Math.min(Math.hypot(dx, dy), outerRadius);
+    const angle = Math.atan2(dy, dx);
+
+    const sx = Math.cos(angle) * dist;
+    const sy = Math.sin(angle) * dist;
+
+    stick.style.transform = `translate(calc(-50% + ${sx}px), calc(-50% + ${sy}px))`;
+
+    // Map stick movement to keys
+    const nx = sx / outerRadius;
+    const ny = sy / outerRadius;
+    const t = 0.35; // deadzone threshold
+
+    keys.w = ny < -t;
+    keys.s = ny > t;
+    keys.a = nx < -t;
+    keys.d = nx > t;
+  }
+
+  joy.addEventListener("touchstart", e => {
+    e.preventDefault();
+    const t = e.changedTouches[0];
+    activeId = t.identifier;
+
+    const rect = joy.getBoundingClientRect();
+    center.x = rect.left + rect.width / 2;
+    center.y = rect.top + rect.height / 2;
+
+    moveStick(t.clientX, t.clientY);
+  }, {passive:false});
+
+  joy.addEventListener("touchmove", e => {
+    e.preventDefault();
+    for (let t of e.changedTouches) {
+      if (t.identifier === activeId) moveStick(t.clientX, t.clientY);
     }
+  }, {passive:false});
 
-    if (!isTouch()) {
-        document.getElementById('mobileControls').style.display = 'none';
-        return;
+  joy.addEventListener("touchend", e => {
+    for (let t of e.changedTouches) {
+      if (t.identifier === activeId) resetStick();
     }
-
-    // --- JOYSTICK LOGIC ---
-    let activeId = null;
-    const outerRadius = 70;
-    const center = { x:0, y:0 };
-
-    function resetStick() {
-        stick.style.transform = 'translate(-50%, -50%)';
-        keys.w = keys.a = keys.s = keys.d = false;
-        activeId = null;
-    }
-
-    function moveStick(x, y) {
-        const dx = x - center.x;
-        const dy = y - center.y;
-        const dist = Math.min(Math.hypot(dx, dy), outerRadius);
-        const angle = Math.atan2(dy, dx);
-
-        const sx = Math.cos(angle) * dist;
-        const sy = Math.sin(angle) * dist;
-
-        stick.style.transform = `translate(calc(-50% + ${sx}px), calc(-50% + ${sy}px))`;
-
-        const nx = sx / outerRadius;
-        const ny = sy / outerRadius;
-        const t = 0.35; // deadzone
-
-        keys.w = ny < -t;
-        keys.s = ny > t;
-        keys.a = nx < -t;
-        keys.d = nx > t;
-    }
-
-    joy.addEventListener("touchstart", e => {
-        e.preventDefault();
-        const t = e.changedTouches[0];
-        activeId = t.identifier;
-
-        const rect = joy.getBoundingClientRect();
-        center.x = rect.left + rect.width / 2;
-        center.y = rect.top + rect.height / 2;
-
-        moveStick(t.clientX, t.clientY);
-    }, {passive:false});
-
-    joy.addEventListener("touchmove", e => {
-        e.preventDefault();
-        for (let t of e.changedTouches) {
-            if (t.identifier === activeId) moveStick(t.clientX, t.clientY);
-        }
-    }, {passive:false});
-
-    joy.addEventListener("touchend", e => {
-        for (let t of e.changedTouches) {
-            if (t.identifier === activeId) resetStick();
-        }
-    });
-
-    // --- SHOOT BUTTON LOGIC ---
-    function shootStart() {
-        // Trigger click on canvas
-        const event = new MouseEvent('mousedown', { bubbles: true });
-        canvas.dispatchEvent(event);
-    }
-
-    function shootEnd() {
-        const event = new MouseEvent('mouseup', { bubbles: true });
-        canvas.dispatchEvent(event);
-    }
-
-    shootBtn.addEventListener('touchstart', e => {
-        e.preventDefault();
-        shootStart();
-    }, {passive:false});
-
-    shootBtn.addEventListener('touchend', e => {
-        e.preventDefault();
-        shootEnd();
-    }, {passive:false});
+  });
 
 })();
 </script>
-
 
 
 <script>
