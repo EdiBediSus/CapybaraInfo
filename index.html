@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,7 +6,7 @@
 <title>Slipper Attack</title>
 <style>
 /* ------------------------------------- */
-/* CORE GAME STYLES (unchanged) */
+/* CORE GAME STYLES */
 /* ------------------------------------- */
 body { 
     margin:0; 
@@ -142,132 +143,6 @@ canvas {
 }
 
 /* ------------------------------------- */
-/* ADMIN PANEL STYLES */
-/* ------------------------------------- */
-#adminPanel {
-    position: absolute;
-    right: 10px;
-    bottom: 10px;
-    background: rgba(139, 0, 0, 0.9);
-    padding: 15px;
-    border-radius: 10px;
-    color: #fff;
-    width: 280px;
-    max-height: 500px;
-    overflow-y: auto;
-    display: none;
-    border: 2px solid #ff5722;
-}
-
-#adminPanel h3 {
-    margin: 0 0 10px 0;
-    font-size: 18px;
-    color: #ffcf60;
-    border-bottom: 2px solid #ff5722;
-    padding-bottom: 5px;
-}
-
-.admin-section {
-    margin: 15px 0;
-    padding: 10px;
-    background: rgba(0,0,0,0.3);
-    border-radius: 5px;
-}
-
-.admin-section h4 {
-    margin: 0 0 8px 0;
-    font-size: 14px;
-    color: #4cd;
-}
-
-.admin-btn {
-    width: 100%;
-    padding: 8px;
-    margin: 5px 0;
-    background: #ff5722;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 13px;
-    font-weight: bold;
-    transition: 0.2s;
-}
-
-.admin-btn:hover {
-    background: #ff7043;
-    transform: scale(1.02);
-}
-
-.admin-btn.warning {
-    background: #ff9800;
-}
-
-.admin-btn.warning:hover {
-    background: #ffb74d;
-}
-
-.admin-input {
-    width: calc(100% - 12px);
-    padding: 6px;
-    margin: 5px 0;
-    background: #222;
-    color: #fff;
-    border: 2px solid #ff5722;
-    border-radius: 5px;
-    font-size: 12px;
-}
-
-.admin-input:focus {
-    outline: none;
-    border-color: #ffcf60;
-}
-
-#adminToggle {
-    position: absolute;
-    right: 10px;
-    bottom: 520px;
-    padding: 10px 15px;
-    background: rgba(139, 0, 0, 0.9);
-    color: #ffcf60;
-    border: 2px solid #ff5722;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: bold;
-    font-size: 14px;
-    display: none;
-}
-
-#adminToggle:hover {
-    background: rgba(255, 87, 34, 0.9);
-}
-
-.player-list-item {
-    padding: 5px;
-    margin: 3px 0;
-    background: rgba(0,0,0,0.4);
-    border-radius: 3px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 12px;
-}
-
-.kick-btn {
-    padding: 3px 8px;
-    background: #f44336;
-    border: none;
-    border-radius: 3px;
-    color: white;
-    cursor: pointer;
-    font-size: 11px;
-}
-
-.kick-btn:hover {
-    background: #d32f2f;
-}
-
-/* ------------------------------------- */
 /* STARTUP SCREEN STYLES */
 /* ------------------------------------- */
 #startupScreen {
@@ -319,27 +194,6 @@ canvas {
     margin-bottom: 20px;
     text-align: center;
     font-size: 18px;
-    background: #222;
-    color: #fff;
-    width: 70%;
-    box-sizing: border-box;
-}
-
-#adminPasswordContainer {
-    margin-top: 15px;
-    padding: 15px;
-    background: rgba(139, 0, 0, 0.3);
-    border-radius: 10px;
-    border: 2px solid #ff5722;
-}
-
-#adminPassword {
-    padding: 10px;
-    border-radius: 6px;
-    border: 2px solid #ff5722;
-    margin-top: 8px;
-    text-align: center;
-    font-size: 14px;
     background: #222;
     color: #fff;
     width: 70%;
@@ -472,18 +326,13 @@ canvas {
         <div id="connectStatus">Connecting to server...</div>
         <input id="startupUsername" placeholder="Enter username" />
         
-        <div id="adminPasswordContainer">
-            <label style="color: #ffcf60; font-weight: bold;">🔐 Admin Access (Optional)</label>
-            <input id="adminPassword" type="password" placeholder="Enter admin password" />
-        </div>
-        
         <button id="startGameBtn" class="menu-button" disabled>Start Game</button>
         
         <button class="menu-button" onclick="openSettings()">Settings</button>
         <button class="menu-button" onclick="openHow()">How to Play</button>
         <button class="menu-button" onclick="window.close()">Exit</button>
 
-        <p class="footer">PC Edition • v1.3 Admin</p>
+        <p class="footer">PC Edition • v1.2</p>
     </div>
 
     <div id="stickman2" class="stickman">
@@ -514,84 +363,291 @@ canvas {
     <div id="leaderboardList"></div>
 </div>
 
-<button id="adminToggle">👑 ADMIN</button>
-
-<div id="adminPanel">
-    <h3>👑 ADMIN CONTROLS</h3>
-    
-    <div class="admin-section">
-        <h4>🗺️ Map Controls</h4>
-        <button class="admin-btn" onclick="adminChangeMap()">Change Map Now</button>
-        <select id="mapSelector" class="admin-input">
-            <option value="0">The Cross</option>
-            <option value="1">Arena</option>
-            <option value="2">The Maze</option>
-            <option value="3">Corridors</option>
-            <option value="4">Open Field</option>
-        </select>
-        <button class="admin-btn" onclick="adminSetMap()">Load Selected Map</button>
-    </div>
-    
-    <div class="admin-section">
-        <h4>⚙️ Game Settings</h4>
-        <button class="admin-btn warning" onclick="adminKillAll()">Kill All Players</button>
-        <button class="admin-btn warning" onclick="adminHealAll()">Heal All Players</button>
-        <button class="admin-btn warning" onclick="adminResetKills()">Reset All Kills</button>
-    </div>
-    
-    <div class="admin-section">
-        <h4>👥 Player Management</h4>
-        <div id="adminPlayerList"></div>
-    </div>
-    
-    <div class="admin-section">
-        <h4>💬 Admin Broadcast</h4>
-        <input id="adminMessage" class="admin-input" placeholder="Type message..." maxlength="120" />
-        <button class="admin-btn" onclick="adminBroadcast()">Send to All</button>
-    </div>
-</div>
-
 <div id="chat"></div>
 <input id="chatInput" placeholder="Type a message" />
 
 <canvas id="game"></canvas>
 
-<script>
-/* ================================
-   Client JavaScript - Fixed
-   - Wraps original code in <script>
-   - Admin trigger: type "admin" on startup to prompt password
-   - Client applies server authoritative state for own player (so regen is visible)
-   ================================ */
+<!-- MOBILE CONTROLS -->
+<style>
+  /* Mobile UI */
+  #mobileControls { position: absolute; left: 0; top: 0; width: 100%; height: 100%; pointer-events: none; z-index: 500; }
+  .joystick {
+    position: absolute;
+    left: 20px;
+    bottom: 20px;
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.03);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.4);
+    pointer-events: auto;
+    touch-action: none;
+  }
+  .joystick .stick {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.12);
+  }
 
-function openSettings() { alert("Settings menu not implemented yet!"); }
-function openHow() { alert("Throw slippers, dodge chaos, win! WASD to move, Click to throw."); }
+  .btnShoot {
+    position: absolute;
+    right: 20px;
+    bottom: 30px;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, rgba(255,87,34,0.95), rgba(255,87,34,0.8));
+    color: white;
+    font-weight: bold;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    pointer-events: auto;
+    touch-action: none;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.45);
+    font-size: 18px;
+  }
+
+  /* Hide on desktop */
+  .mobile-only { display: none; }
+  @media (pointer: coarse) {
+    .mobile-only { display: block; }
+    #chatInput, #usernameContainer, #usernameInput { font-size: 16px; }
+  }
+</style>
+
+<div id="mobileControls" class="mobile-only" aria-hidden="true">
+  <div id="joy" class="joystick" role="application" aria-label="Mobile joystick">
+    <div id="stick" class="stick"></div>
+  </div>
+  <div id="shootBtn" class="btnShoot mobile-only">FIRE</div>
+</div>
+
+<script>
+/* ===== Mobile controls implementation =====
+   - left joystick controls movement (sets keys.w/a/s/d)
+   - shoot button sends a socket 'shoot' or triggers local canvas click behavior
+*/
+
+(function(){
+  const joy = document.getElementById('joy');
+  const stick = document.getElementById('stick');
+  const shootBtn = document.getElementById('shootBtn');
+  const canvasRect = canvas.getBoundingClientRect();
+
+  // Detect touch device and show controls
+  function isTouch() {
+    return ('ontouchstart' in window) || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0;
+  }
+
+  if(!isTouch()){
+    // hide mobileControls if not touch
+    document.getElementById('mobileControls').style.display = 'none';
+    return;
+  }
+
+  // Joystick state
+  let activeId = null;
+  let baseX = 0, baseY = 0;
+  const radius = 56; // stick radius (half of stick container approx)
+  const outerRadius = 70; // radius inside which we move stick
+  const center = { x: 0, y: 0 };
+
+  function resetStick() {
+    stick.style.transform = 'translate(-50%, -50%)';
+    activeId = null;
+    // release movement keys
+    keys.w = keys.a = keys.s = keys.d = false;
+  }
+
+  joy.addEventListener('touchstart', function(e){
+    e.preventDefault();
+    const t = e.changedTouches[0];
+    activeId = t.identifier;
+    const rect = joy.getBoundingClientRect();
+    center.x = rect.left + rect.width/2;
+    center.y = rect.top + rect.height/2;
+    // position stick to touch
+    moveStickTo(t.clientX, t.clientY);
+  }, {passive:false});
+
+  joy.addEventListener('touchmove', function(e){
+    e.preventDefault();
+    for (let i=0;i<e.changedTouches.length;i++){
+      const t = e.changedTouches[i];
+      if (t.identifier !== activeId) continue;
+      moveStickTo(t.clientX, t.clientY);
+    }
+  }, {passive:false});
+
+  joy.addEventListener('touchend', function(e){
+    for (let i=0;i<e.changedTouches.length;i++){
+      const t = e.changedTouches[i];
+      if (t.identifier === activeId) {
+        resetStick();
+      }
+    }
+  }, {passive:false});
+
+  function moveStickTo(clientX, clientY){
+    const dx = clientX - center.x;
+    const dy = clientY - center.y;
+    const dist = Math.hypot(dx, dy);
+    const max = outerRadius;
+    const clampDist = Math.min(dist, max);
+    const angle = Math.atan2(dy, dx);
+
+    const stickX = Math.cos(angle) * clampDist;
+    const stickY = Math.sin(angle) * clampDist;
+
+    // visually move stick (translate from center)
+    stick.style.transform = `translate(calc(-50% + ${stickX}px), calc(-50% + ${stickY}px))`;
+
+    // derive normalized direction and set keys
+    const nx = (clampDist === 0) ? 0 : (stickX / max);
+    const ny = (clampDist === 0) ? 0 : (stickY / max);
+
+    // threshold to consider as axis pressed
+    const thr = 0.35;
+
+    keys.w = (ny < -thr);
+    keys.s = (ny > thr);
+    keys.a = (nx < -thr);
+    keys.d = (nx > thr);
+  }
+
+  // Shoot button
+  shootBtn.addEventListener('touchstart', function(e){
+    e.preventDefault();
+    // emulate a click at direction of last touch on right half (or center of screen)
+    // We will fire toward the center-right of screen (or towards last touch)
+    // Simpler: shoot in the direction the player is facing (mouseless) — send angle 0
+    // Better: use the touch position to aim:
+    const t = e.changedTouches[0];
+    const rect = canvas.getBoundingClientRect();
+    const mx = t.clientX - rect.left;
+    const my = t.clientY - rect.top;
+    const angle = Math.atan2(my - player.y, mx - player.x);
+
+    // Reuse shooting code: send socket shoot and add local bullet
+    if (player.deadUntil > Date.now() || startupScreen.style.display !== 'none') return;
+    const now = Date.now();
+    if(now - lastShot < SHOT_COOLDOWN_MS) return;
+    lastShot = now;
+
+    const dx = Math.cos(angle)*BULLET_SPEED;
+    const dy = Math.sin(angle)*BULLET_SPEED;
+
+    // send to server
+    try {
+      if(socket && socket.readyState === WebSocket.OPEN){
+        socket.send(JSON.stringify({
+          type:"shoot",
+          angle: angle,
+          x: player.x,
+          y: player.y
+        }));
+      }
+    } catch(e){}
+
+    bullets.push({x:player.x,y:player.y,dx,dy,t:Date.now(),owner:player.id});
+    player.vx -= dx*0.02;
+    player.vy -= dy*0.02;
+
+    // brief visual press
+    shootBtn.style.transform = 'scale(0.95)';
+    setTimeout(()=> shootBtn.style.transform = '', 80);
+  }, {passive:false});
+
+  // Also support tapping the right half of the screen to shoot (common in mobile shooters)
+  document.addEventListener('touchstart', function(e){
+    if (!e.changedTouches || e.changedTouches.length===0) return;
+    const t = e.changedTouches[0];
+    const rect = canvas.getBoundingClientRect();
+    // if touch is on the right half and not inside UI buttons, shoot
+    if (t.clientX > (rect.left + rect.width/2) && t.clientY > rect.top && t.clientY < rect.bottom) {
+      // avoid double-shoot if it's the shootBtn touch (it already handled)
+      // small timeout to avoid double-firing
+      setTimeout(()=>{}, 0);
+      // Do nothing here because shootBtn handles it, but keep for fallback.
+    }
+  }, {passive:true});
+
+  // Resize handler so joystick positions remain correct
+  window.addEventListener('resize', ()=> {
+    // nothing heavy needed; center recalculated on touchstart
+  });
+})();
+</script>
+
+
+<script>
+function openSettings() {
+    alert("Settings menu not implemented yet!");
+}
+function openHow() {
+    alert("Throw slippers, dodge chaos, win! WASD to move, Click to throw.");
+}
 
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 canvas.width = 1000; canvas.height = 700;
 
-const WS_URL = "wss://capybarainfo.onrender.com";
+const WS_URL = "wss://slips-4.onrender.com"; 
 const socket = new WebSocket(WS_URL);
 
-const PLAYER_SIZE = 16;
+const PLAYER_SIZE = 16; // Player radius
 const BULLET_SIZE = 6;
 const PLAYER_MAX_HP = 100;
 const BULLET_SPEED = 10, SHOT_COOLDOWN_MS = 300, FRICTION = 0.86, SPEED = 3.2;
 const BULLET_DAMAGE = 20, KNOCKBACK = 5;
 const RESP_COOLDOWN_MS = 3000;
-const MAP_CHANGE_INTERVAL = 180000;
-const FIXED_TIMESTEP = 1000 / 60;
+const MAP_CHANGE_INTERVAL = 180000; // 3 minutes in milliseconds
 
+// Fixed timestep for consistent speed across all devices
+const FIXED_TIMESTEP = 1000 / 60; // 60 FPS
 let lastFrameTime = Date.now();
 let accumulator = 0;
 
-// Admin state
-let isAdmin = false;
-let adminPassword = "";
-
-// MAP definitions (identical to original)
+// Multiple map layouts
 const MAPS = [
+
+    // 🎄 1. CHRISTMAS LAND (OPEN)
+    {
+        name: "Christmas Land",
+        walls: [
+            // Outer walls
+            {x: 0, y: 0, width: 1000, height: 20, color: '#2c3e50'},
+            {x: 0, y: 680, width: 1000, height: 20, color: '#2c3e50'},
+            {x: 0, y: 0, width: 20, height: 700, color: '#2c3e50'},
+            {x: 980, y: 0, width: 20, height: 700, color: '#2c3e50'},
+
+            // Inner maze (horizontal)
+            {x: 300, y: 150, width: 400, height: 20, color: "red"},
+            {x: 150, y: 280, width: 250, height: 20, color: "red"},
+            {x: 600, y: 280, width: 250, height: 20, color: "red"},
+            {x: 300, y: 410, width: 400, height: 20, color: "red"},
+            {x: 150, y: 540, width: 250, height: 20, color: "red"},
+            {x: 600, y: 540, width: 250, height: 20, color: "red"},
+
+            // Inner maze (vertical)
+            {x: 150, y: 280, width: 20, height: 260, color: "red"},
+            {x: 830, y: 280, width: 20, height: 260, color: "red"},
+
+            {x: 470, y: 150, width: 20, height: 130, color: "red"},
+            {x: 470, y: 410, width: 20, height: 130, color: "red"}
+	   
+
+        ]
+    },
+
+    // 2. CROSS MAP
     {
         name: "The Cross",
         walls: [
@@ -604,9 +660,11 @@ const MAPS = [
             {x: 200, y: 480, width: 200, height: 20, color: '#34495e'},
             {x: 600, y: 480, width: 200, height: 20, color: '#34495e'},
             {x: 480, y: 100, width: 20, height: 200, color: '#34495e'},
-            {x: 480, y: 400, width: 20, height: 200, color: '#34495e'},
+            {x: 480, y: 400, width: 20, height: 200, color: '#34495e'}
         ]
     },
+
+    // 3. ARENA
     {
         name: "Arena",
         walls: [
@@ -619,9 +677,11 @@ const MAPS = [
             {x: 150, y: 450, width: 100, height: 100, color: '#34495e'},
             {x: 750, y: 450, width: 100, height: 100, color: '#34495e'},
             {x: 420, y: 250, width: 80, height: 80, color: '#34495e'},
-            {x: 520, y: 370, width: 80, height: 80, color: '#34495e'},
+            {x: 520, y: 370, width: 80, height: 80, color: '#34495e'}
         ]
     },
+
+    // 4. MAZE
     {
         name: "The Maze",
         walls: [
@@ -636,9 +696,11 @@ const MAPS = [
             {x: 100, y: 300, width: 150, height: 20, color: '#34495e'},
             {x: 300, y: 500, width: 150, height: 20, color: '#34495e'},
             {x: 550, y: 300, width: 150, height: 20, color: '#34495e'},
-            {x: 700, y: 500, width: 150, height: 20, color: '#34495e'},
+            {x: 700, y: 500, width: 150, height: 20, color: '#34495e'}
         ]
     },
+
+    // 5. CORRIDORS
     {
         name: "Corridors",
         walls: [
@@ -651,9 +713,11 @@ const MAPS = [
             {x: 300, y: 50, width: 20, height: 150, color: '#34495e'},
             {x: 700, y: 50, width: 20, height: 150, color: '#34495e'},
             {x: 300, y: 520, width: 20, height: 150, color: '#34495e'},
-            {x: 700, y: 520, width: 20, height: 150, color: '#34495e'},
+            {x: 700, y: 520, width: 20, height: 150, color: '#34495e'}
         ]
     },
+
+    // 6. OPEN FIELD
     {
         name: "Open Field",
         walls: [
@@ -666,14 +730,18 @@ const MAPS = [
             {x: 250, y: 530, width: 80, height: 20, color: '#34495e'},
             {x: 670, y: 530, width: 80, height: 20, color: '#34495e'},
             {x: 450, y: 300, width: 20, height: 100, color: '#34495e'},
-            {x: 550, y: 300, width: 20, height: 100, color: '#34495e'},
+            {x: 550, y: 300, width: 20, height: 100, color: '#34495e'}
         ]
     }
+
 ];
+
 
 let currentMapIndex = 0;
 let WALLS = MAPS[currentMapIndex].walls;
+let mapChangeTimer = Date.now();
 
+// Show map change notification
 function showMapNotification(mapName) {
     const notification = document.createElement('div');
     notification.style.position = 'absolute';
@@ -691,13 +759,13 @@ function showMapNotification(mapName) {
     setTimeout(() => {
         notification.remove();
     }, 3000);
-}
+} 
 
 let player = { 
     x:500, y:350, vx:0, vy:0, 
     renderX: 500, renderY: 350,
     color:"#39f", id:null, hp:PLAYER_MAX_HP,
-    displayHP: PLAYER_MAX_HP,
+    displayHP: PLAYER_MAX_HP, // For smooth HP animation
     username:"", deadUntil: 0, kills: 0 
 };
 let bullets = [], otherPlayers = {}, lastShot=0, keys=[];
@@ -708,24 +776,14 @@ const cooldownText = document.getElementById("cooldownText");
 const hpText = document.getElementById("hpText");
 const deathMessage = document.getElementById("deathMessage");
 const leaderboardList = document.getElementById("leaderboardList");
+
 const startupScreen = document.getElementById("startupScreen");
 const startupUsernameInput = document.getElementById("startupUsername");
 const usernameInput = document.getElementById("usernameInput");
 const connectStatus = document.getElementById("connectStatus");
 const startGameBtn = document.getElementById("startGameBtn");
-const adminToggle = document.getElementById("adminToggle");
-const adminPanel = document.getElementById("adminPanel");
-const adminPasswordInput = document.getElementById("adminPassword");
-
-// Hide admin password prompt initially (we only show it when "admin" is typed)
-document.getElementById("adminPasswordContainer").style.display = "none";
 
 startupUsernameInput.value = "Player"+Math.floor(Math.random()*9000);
-
-// Admin toggle
-adminToggle.addEventListener("click", () => {
-    adminPanel.style.display = adminPanel.style.display === 'none' ? 'block' : 'none';
-});
 
 // Username change in-game
 usernameInput.addEventListener("keydown", e => {
@@ -738,400 +796,207 @@ usernameInput.addEventListener("keydown", e => {
     }
 });
 
-// ===================================
-// ADMIN FUNCTIONS
-// ===================================
-
-function adminChangeMap() {
-    if(!isAdmin) {
-        alert("❌ Admin access required!");
-        return;
-    }
-    socket.send(JSON.stringify({type:"adminChangeMap", password: adminPassword}));
-}
-
-function adminSetMap() {
-    if(!isAdmin) {
-        alert("❌ Admin access required!");
-        return;
-    }
-    const mapIndex = parseInt(document.getElementById("mapSelector").value);
-    socket.send(JSON.stringify({type:"adminSetMap", mapIndex: mapIndex, password: adminPassword}));
-}
-
-function adminKillAll() {
-    if(!isAdmin) {
-        alert("❌ Admin access required!");
-        return;
-    }
-    if(confirm("⚠️ Kill all players?")) {
-        socket.send(JSON.stringify({type:"adminKillAll", password: adminPassword}));
-    }
-}
-
-function adminHealAll() {
-    if(!isAdmin) {
-        alert("❌ Admin access required!");
-        return;
-    }
-    socket.send(JSON.stringify({type:"adminHealAll", password: adminPassword}));
-}
-
-function adminResetKills() {
-    if(!isAdmin) {
-        alert("❌ Admin access required!");
-        return;
-    }
-    if(confirm("⚠️ Reset all player kills?")) {
-        socket.send(JSON.stringify({type:"adminResetKills", password: adminPassword}));
-    }
-}
-
-function adminKickPlayer(playerId, username) {
-    if(!isAdmin) {
-        alert("❌ Admin access required!");
-        return;
-    }
-    if(confirm(`⚠️ Kick player: ${username}?`)) {
-        socket.send(JSON.stringify({type:"adminKick", playerId: playerId, password: adminPassword}));
-    }
-}
-
-function adminBroadcast() {
-    if(!isAdmin) {
-        alert("❌ Admin access required!");
-        return;
-    }
-    const msg = document.getElementById("adminMessage").value.trim();
-    if(msg === "") return;
-    
-    socket.send(JSON.stringify({
-        type:"adminBroadcast", 
-        message: msg,
-        password: adminPassword
-    }));
-    document.getElementById("adminMessage").value = "";
-}
-
-function updateAdminPlayerList() {
-    if(!isAdmin) return;
-    
-    const playerListDiv = document.getElementById("adminPlayerList");
-    let html = '';
-    
-    // Add current player
-    html += `<div class="player-list-item">
-        <span>👤 ${player.username} (You)</span>
-        <span>${player.kills} 💀</span>
-    </div>`;
-    
-    // Add other players
-    for(const id in otherPlayers) {
-        const p = otherPlayers[id];
-        html += `<div class="player-list-item">
-            <span>👤 ${p.username}</span>
-            <span>${p.kills || 0} 💀</span>
-            <button class="kick-btn" onclick="adminKickPlayer('${id}', '${p.username}')">Kick</button>
-        </div>`;
-    }
-    
-    playerListDiv.innerHTML = html || '<div style="opacity:0.5">No players</div>';
-}
-
-// ===================================
-// WEBSOCKET EVENT HANDLERS
-// ===================================
-
 socket.onopen = ()=>{
-    console.log("✅ Connected to server via WebSocket!");
-    connectStatus.textContent = "Connected. Enter your name and click START!";
-    startGameBtn.disabled = false;
+  console.log("✅ Connected to server via WebSocket!");
+  connectStatus.textContent = "Connected. Enter your name and click START!";
+  startGameBtn.disabled = false;
 };
-
 socket.onerror = err=>{
     console.error("❌ WebSocket error:", err);
     connectStatus.textContent = "Connection failed. Check if server is running.";
 };
-
 socket.onclose = ()=>{
-    console.warn("⚠️ WebSocket closed");
+    console.warn("⚠ WebSocket closed");
     connectStatus.textContent = "Disconnected from server.";
     startGameBtn.disabled = true;
     startupScreen.style.display = 'flex'; 
-    adminToggle.style.display = 'none';
-    adminPanel.style.display = 'none';
 };
 
 socket.onmessage = ev=>{
-    const data = JSON.parse(ev.data);
+  const data = JSON.parse(ev.data);
 
-    // Initialize player
-    if(data.type==="init"){ 
-        player.id = data.id; 
-        player.deadUntil = data.deadUntil || 0;
-        player.hp = data.hp || PLAYER_MAX_HP;
-        return; 
+  if(data.type==="init"){ 
+    player.id = data.id; 
+    player.deadUntil = data.deadUntil || 0;
+    player.hp = data.hp || PLAYER_MAX_HP;
+    return; 
+  }
+  
+  if(data.type==="state" && data.playerId!==player.id) {
+    const state = data.state;
+    
+    // Initialize render positions if this is a new player
+    if(!otherPlayers[data.playerId]) {
+        state.renderX = state.x;
+        state.renderY = state.y;
+        state.kills = state.kills || 0;
+        state.bullets = state.bullets || [];
+    } else {
+        // Keep existing render positions for smooth interpolation
+        state.renderX = otherPlayers[data.playerId].renderX;
+        state.renderY = otherPlayers[data.playerId].renderY;
+        state.kills = state.kills || otherPlayers[data.playerId].kills || 0;
+        state.bullets = state.bullets || [];
     }
     
-    // Admin authentication response
-    if(data.type==="adminAuth") {
-        isAdmin = data.success;
-        if(isAdmin) {
-            console.log("👑 Admin access granted!");
-            adminToggle.style.display = 'block';
-            
-            const line = document.createElement("div");
-            line.style.color = "#ffcf60";
-            line.style.fontWeight = "bold";
-            line.textContent = "👑 You are now an admin!";
-            chatDiv.appendChild(line);
-            chatDiv.scrollTop = chatDiv.scrollHeight;
-        } else {
-            alert("❌ Invalid admin password!");
-        }
-        return;
-    }
-    
-    // Admin broadcast message
-    if(data.type==="adminBroadcast") {
-        const line = document.createElement("div");
-        line.style.color = "#ff5722";
-        line.style.fontWeight = "bold";
-        line.style.fontSize = "14px";
-        line.textContent = `📢 [ADMIN]: ${data.message}`;
-        chatDiv.appendChild(line);
-        chatDiv.scrollTop = chatDiv.scrollHeight;
-        
-        // Show notification overlay
-        showMapNotification(`ADMIN: ${data.message}`);
-        return;
-    }
-    
-    // Unified state handling: if server sends a state for any player, apply it.
-    // IMPORTANT: now server sends state for originating player too, so we must apply it to our local player.
-    if(data.type==="state" && data.playerId!==undefined && data.state) {
-        if(data.playerId === player.id) {
-            // apply authoritative server state to local player so regen/hits/respawn are visible locally
-            const s = data.state;
-            player.x = typeof s.x === 'number' ? s.x : player.x;
-            player.y = typeof s.y === 'number' ? s.y : player.y;
-            player.vx = typeof s.vx === 'number' ? s.vx : player.vx;
-            player.vy = typeof s.vy === 'number' ? s.vy : player.vy;
-            player.hp = typeof s.hp === 'number' ? s.hp : player.hp;
-            player.username = s.username || player.username;
-            player.color = s.color || player.color;
-            player.deadUntil = s.deadUntil || player.deadUntil;
-            player.kills = s.kills || player.kills;
-            // bullets optionally replaced by authoritative bullets array
-            if(Array.isArray(s.bullets)) bullets = s.bullets;
-        } else {
-            const state = data.state;
-            state.renderX = state.x;
-            state.renderY = state.y;
-            state.kills = state.kills || 0;
-            state.bullets = state.bullets || [];
-            otherPlayers[data.playerId] = state;
-        }
-        return;
-    }
-    
-    // Player disconnected
-    if(data.type==="leave") {
-        delete otherPlayers[data.playerId];
-        return;
-    }
-    
-    // Player was hit
-    if(data.type==="hit" && data.playerId===player.id){
-        player.hp = data.hp;
-        player.vx += data.knock.x;
-        player.vy += data.knock.y;
-        return;
-    }
-    
-    // Current player died
-    if(data.type==="dead" && data.playerId===player.id){
-        player.hp = 0;
-        player.displayHP = 0;
-        player.deadUntil = data.deadUntil || Date.now() + RESP_COOLDOWN_MS;
-        player.vx = 0; 
-        player.vy = 0;
-        
-        deathMessage.style.display = 'block';
-        setTimeout(() => {
-            deathMessage.style.display = 'none';
-        }, 3000);
-        return;
-    }
-    
-    // Other player died
-    if(data.type==="dead" && data.playerId!==player.id && otherPlayers[data.playerId]){
-        otherPlayers[data.playerId].hp = 0;
-        otherPlayers[data.playerId].deadUntil = data.deadUntil;
-        return;
-    }
-    
-    // Current player respawned
-    if(data.type==="respawned" && data.playerId===player.id){
-        player.hp = PLAYER_MAX_HP;
-        player.displayHP = PLAYER_MAX_HP;
-        player.deadUntil = 0;
-        player.x = 500; player.y = 350; player.vx = 0; player.vy = 0;
-        player.renderX = 500; player.renderY = 350;
-        
-        deathMessage.textContent = "RESPAWNED!";
-        deathMessage.style.color = "#4cd";
-        deathMessage.style.display = 'block';
-        setTimeout(() => {
-            deathMessage.style.display = 'none';
-            deathMessage.textContent = "YOU DIED!";
-            deathMessage.style.color = "#ff5722";
-        }, 1000);
-        return;
-    }
-    
-    // Other player respawned
-    if(data.type==="respawned" && data.playerId!==player.id && otherPlayers[data.playerId]){
-        otherPlayers[data.playerId].hp = PLAYER_MAX_HP;
-        otherPlayers[data.playerId].deadUntil = 0;
-        return;
-    }
-    
-    // Map changed
-    if(data.type==="mapChange"){
-        currentMapIndex = data.mapIndex;
-        WALLS = MAPS[currentMapIndex].walls;
-        showMapNotification(MAPS[currentMapIndex].name);
-        
-        player.x = 500;
-        player.y = 350;
-        player.renderX = 500;
-        player.renderY = 350;
-        player.vx = 0;
-        player.vy = 0;
-        
-        bullets = [];
-        return;
-    }
-    
-    // Kill event
-    if(data.type==="kill") {
-        if(data.killerId === player.id) {
-            player.kills = data.killerKills || (player.kills + 1);
-        }
-        
-        if(otherPlayers[data.killerId]) {
-            otherPlayers[data.killerId].kills = data.killerKills || ((otherPlayers[data.killerId].kills || 0) + 1);
-        }
-        
-        const killMsg = document.createElement("div");
-        killMsg.style.color = "#ff5722";
-        killMsg.style.fontWeight = "bold";
-        killMsg.textContent = `💀 ${data.killerName} eliminated ${data.victimName}`;
-        chatDiv.appendChild(killMsg);
-        chatDiv.scrollTop = chatDiv.scrollHeight;
-        
-        updateLeaderboard();
-        return;
-    }
+    otherPlayers[data.playerId] = state;
+  }
+  
+  if(data.type==="leave") delete otherPlayers[data.playerId];
+  
+  if(data.type==="hit" && data.playerId===player.id){
+      player.hp = data.hp;
+      player.vx += data.knock.x;
+      player.vy += data.knock.y;
+  }
+  
+  if(data.type==="dead" && data.playerId===player.id){
+      player.hp = 0;
+      player.displayHP = 0;
+      player.deadUntil = data.deadUntil || Date.now() + RESP_COOLDOWN_MS;
+      player.vx = 0; 
+      player.vy = 0;
+      
+      // Show death message
+      deathMessage.style.display = 'block';
+      setTimeout(() => {
+          deathMessage.style.display = 'none';
+      }, 3000);
+  }
+  
+  // Update other player deaths
+  if(data.type==="dead" && data.playerId!==player.id && otherPlayers[data.playerId]){
+      otherPlayers[data.playerId].hp = 0;
+      otherPlayers[data.playerId].deadUntil = data.deadUntil;
+  }
+  
+  if(data.type==="respawned" && data.playerId===player.id){
+      player.hp = PLAYER_MAX_HP;
+      player.displayHP = PLAYER_MAX_HP;
+      player.deadUntil = 0;
+      player.x = 500; player.y = 350; player.vx = 0; player.vy = 0;
+      player.renderX = 500; player.renderY = 350;
+      
+      // Show respawn message
+      deathMessage.textContent = "RESPAWNED!";
+      deathMessage.style.color = "#4cd";
+      deathMessage.style.display = 'block';
+      setTimeout(() => {
+          deathMessage.style.display = 'none';
+          deathMessage.textContent = "YOU DIED!";
+          deathMessage.style.color = "#ff5722";
+      }, 1000);
+  }
+  
+  // Update other player respawns
+  if(data.type==="respawned" && data.playerId!==player.id && otherPlayers[data.playerId]){
+      otherPlayers[data.playerId].hp = PLAYER_MAX_HP;
+      otherPlayers[data.playerId].deadUntil = 0;
+  }
+  
+  // Handle map change from server
+  if(data.type==="mapChange"){
+      currentMapIndex = data.mapIndex;
+      WALLS = MAPS[currentMapIndex].walls;
+      showMapNotification(MAPS[currentMapIndex].name);
+      
+      // Teleport player to safe spawn position
+      player.x = 500;
+      player.y = 350;
+      player.renderX = 500;
+      player.renderY = 350;
+      player.vx = 0;
+      player.vy = 0;
+      
+      // Clear bullets
+      bullets = [];
+  }
+  
+  if(data.type==="kill") {
+      // Update kill count
+      if(data.killerId === player.id) {
+          player.kills = data.killerKills || (player.kills + 1);
+      }
+      
+      // Update killer's kills in other players list
+      if(otherPlayers[data.killerId]) {
+          otherPlayers[data.killerId].kills = data.killerKills || ((otherPlayers[data.killerId].kills || 0) + 1);
+      }
+      
+      // Show kill notification in chat
+      const killMsg = document.createElement("div");
+      killMsg.style.color = "#ff5722";
+      killMsg.style.fontWeight = "bold";
+      killMsg.textContent = `💀 ${data.killerName} eliminated ${data.victimName}`;
+      chatDiv.appendChild(killMsg);
+      chatDiv.scrollTop = chatDiv.scrollHeight;
+      
+      // Force leaderboard update immediately
+      updateLeaderboard();
+  }
 
-    // Chat message
-    if(data.type==="chat") {
-        const line = document.createElement("div");
-        line.textContent = `${data.username}: ${data.message}`;
-        chatDiv.appendChild(line);
-        chatDiv.scrollTop = chatDiv.scrollHeight;
-        if(chatDiv.childNodes.length>50) chatDiv.removeChild(chatDiv.firstChild);
-        return;
-    }
+  if(data.type==="chat") {
+    const line = document.createElement("div");
+    line.textContent = `${data.username}: ${data.message}`;
+    chatDiv.appendChild(line);
+    chatDiv.scrollTop = chatDiv.scrollHeight;
+    if(chatDiv.childNodes.length>50) chatDiv.removeChild(chatDiv.firstChild);
+  }
 };
 
-// ===================================
-// UI EVENT LISTENERS
-// ===================================
-
-// Start game button (supports typing "admin" to show admin password prompt)
 startGameBtn.addEventListener("click", ()=>{
     if (socket.readyState !== WebSocket.OPEN || startGameBtn.disabled) {
         return;
     }
     
-    const typed = (startupUsernameInput.value || "").trim();
-    if(!typed) return;
-
-    if(typed.toLowerCase() === "admin") {
-        // display admin password container and wait for Enter
-        document.getElementById("adminPasswordContainer").style.display = "block";
-        adminPasswordInput.value = "";
-        adminPasswordInput.focus();
-        connectStatus.textContent = "Admin login: enter password and press Enter";
-        
-        const onAdminEnter = (e) => {
-            if(e.key === "Enter") {
-                const pw = adminPasswordInput.value.trim();
-                if(!pw) { alert("Enter password"); return; }
-                adminPassword = pw;
-                socket.send(JSON.stringify({type:"adminAuth", password: adminPassword}));
-                adminPasswordInput.removeEventListener("keydown", onAdminEnter);
-                document.getElementById("adminPasswordContainer").style.display = "none";
-            }
-        };
-        adminPasswordInput.addEventListener("keydown", onAdminEnter);
-        return;
-    }
-
-    const username = typed.slice(0,16) || "Player";
+    const username = startupUsernameInput.value.trim().slice(0,16)||"Player";
     player.username = username;
-    adminPassword = "";
+
     socket.send(JSON.stringify({type:"setName", name:player.username}));
+
     startupScreen.style.display = 'none';
 });
 
-// Chat input
 chatInput.addEventListener("keydown", e=>{
-    if(e.key==="Enter" && chatInput.value.trim()!=="" && player.id && startupScreen.style.display === 'none'){
-        const msg = chatInput.value.trim();
-        socket.send(JSON.stringify({type:"chat", message:msg}));
-        chatInput.value = "";
-    }
+  if(e.key==="Enter" && chatInput.value.trim()!=="" && player.id && startupScreen.style.display === 'none'){
+    const msg = chatInput.value.trim();
+    socket.send(JSON.stringify({type:"chat", message:msg}));
+    chatInput.value = "";
+  }
 });
 
-// Keyboard controls
 document.addEventListener("keydown", e => keys[e.key]=true);
 document.addEventListener("keyup", e => keys[e.key]=false);
 
-// Mouse click to shoot
 canvas.addEventListener("click", e=>{
-    if(player.deadUntil > Date.now() || startupScreen.style.display !== 'none') return; 
+  if(player.deadUntil > Date.now() || startupScreen.style.display !== 'none') return; 
 
-    const now=Date.now();
-    if(now-lastShot<SHOT_COOLDOWN_MS) return;
-    lastShot=now;
+  const now=Date.now();
+  if(now-lastShot<SHOT_COOLDOWN_MS) return;
+  lastShot=now;
 
-    const rect = canvas.getBoundingClientRect();
-    const mx = e.clientX - rect.left;
-    const my = e.clientY - rect.top;
-    const angle = Math.atan2(my-player.y, mx-player.x);
-    const dx = Math.cos(angle)*BULLET_SPEED;
-    const dy = Math.sin(angle)*BULLET_SPEED;
-    
-    socket.send(JSON.stringify({
-        type:"shoot",
-        angle: angle,
-        x: player.x,
-        y: player.y
-    }));
-    
-    bullets.push({x:player.x,y:player.y,dx,dy,t:Date.now(),owner:player.id});
-    
-    player.vx -= dx*0.02;
-    player.vy -= dy*0.02;
+  const rect = canvas.getBoundingClientRect();
+  const mx = e.clientX - rect.left;
+  const my = e.clientY - rect.top;
+  const angle = Math.atan2(my-player.y, mx-player.x);
+  const dx = Math.cos(angle)*BULLET_SPEED;
+  const dy = Math.sin(angle)*BULLET_SPEED;
+  
+  // Send shoot command to server instead of creating bullet locally
+  socket.send(JSON.stringify({
+    type:"shoot",
+    angle: angle,
+    x: player.x,
+    y: player.y
+  }));
+  
+  bullets.push({x:player.x,y:player.y,dx,dy,t:Date.now(),owner:player.id});
+  
+  player.vx -= dx*0.02;
+  player.vy -= dy*0.02;
 });
 
-// ===================================
-// COLLISION DETECTION
-// ===================================
-
+// Check collision between rectangle and walls
 function checkWallCollision(x, y, size) {
     for(const wall of WALLS) {
         if(x + size > wall.x && 
@@ -1144,130 +1009,141 @@ function checkWallCollision(x, y, size) {
     return null;
 }
 
-// SLIPPER ATTACK - PART 4: Game Loop & Rendering
-
 function update(){
-    const IS_DEAD = player.deadUntil > Date.now();
-    const IS_GAME_ACTIVE = startupScreen.style.display === 'none';
-    
-    const currentTime = Date.now();
-    const deltaTime = currentTime - lastFrameTime;
-    lastFrameTime = currentTime;
-    accumulator += deltaTime;
-    
-    if(accumulator > 200) accumulator = 200;
-    
-    while(accumulator >= FIXED_TIMESTEP) {
-        updatePhysics(IS_DEAD, IS_GAME_ACTIVE);
-        accumulator -= FIXED_TIMESTEP;
-    }
+  const IS_DEAD = player.deadUntil > Date.now();
+  const IS_GAME_ACTIVE = startupScreen.style.display === 'none';
+  
+  // Fixed timestep - ensures same speed on all devices
+  const currentTime = Date.now();
+  const deltaTime = currentTime - lastFrameTime;
+  lastFrameTime = currentTime;
+  accumulator += deltaTime;
+  
+  // Cap accumulator to prevent spiral of death
+  if(accumulator > 200) accumulator = 200;
+  
+  // Update with fixed timestep
+  while(accumulator >= FIXED_TIMESTEP) {
+    updatePhysics(IS_DEAD, IS_GAME_ACTIVE);
+    accumulator -= FIXED_TIMESTEP;
+  }
 
-    player.renderX += (player.x - player.renderX) * 0.25;
-    player.renderY += (player.y - player.renderY) * 0.25;
+  // Smooth interpolation for own player (increased smoothness)
+  player.renderX += (player.x - player.renderX) * 0.25;
+  player.renderY += (player.y - player.renderY) * 0.25;
+  
+  // Smooth HP animation
+  player.displayHP += (player.hp - player.displayHP) * 0.15;
+
+  // Smooth interpolation for other players (increased smoothness)
+  for(const id in otherPlayers) {
+      const p = otherPlayers[id];
+      if(!p.renderX) p.renderX = p.x;
+      if(!p.renderY) p.renderY = p.y;
+      if(!p.displayHP) p.displayHP = p.hp;
+      
+      p.renderX += (p.x - p.renderX) * 0.25;
+      p.renderY += (p.y - p.renderY) * 0.25;
+      p.displayHP += (p.hp - p.displayHP) * 0.15;
+  }
+
+  // Update bullets
+  bullets.forEach(b => { 
+      b.x += b.dx; 
+      b.y += b.dy;
+      
+      // Check bullet-wall collision
+      if(checkWallCollision(b.x, b.y, BULLET_SIZE)) {
+          b.hit = true;
+      }
+  });
+  
+  // Remove hit bullets and out-of-bounds bullets
+  bullets = (!IS_GAME_ACTIVE || IS_DEAD) ? [] : bullets.filter(b => 
+      !b.hit && 
+      b.x>-20 && b.x<canvas.width+20 && 
+      b.y>-20 && b.y<canvas.height+20 && 
+      Date.now()-b.t<8000
+  );
+
+  if(socket.readyState===WebSocket.OPEN && IS_GAME_ACTIVE){
+    const serverBullets = bullets.map(b => ({
+      x: b.x, 
+      y: b.y, 
+      dx: b.dx, 
+      dy: b.dy
+    }));
     
-    player.displayHP += (player.hp - player.displayHP) * 0.15;
-
-    for(const id in otherPlayers) {
-        const p = otherPlayers[id];
-        if(!p.renderX) p.renderX = p.x;
-        if(!p.renderY) p.renderY = p.y;
-        if(!p.displayHP) p.displayHP = p.hp;
-        
-        p.renderX += (p.x - p.renderX) * 0.25;
-        p.renderY += (p.y - p.renderY) * 0.25;
-        p.displayHP += (p.hp - p.displayHP) * 0.15;
-    }
-
-    bullets.forEach(b => { 
-        b.x += b.dx; 
-        b.y += b.dy;
-        
-        if(checkWallCollision(b.x, b.y, BULLET_SIZE)) {
-            b.hit = true;
+    if (!IS_DEAD || player.vx !== 0 || player.vy !== 0) {
+      socket.send(JSON.stringify({
+        type:"update",
+        state:{
+          x:player.x, y:player.y,
+          vx:player.vx, vy:player.vy,
+          bullets: serverBullets
         }
-    });
-    
-    bullets = (!IS_GAME_ACTIVE || IS_DEAD) ? [] : bullets.filter(b => 
-        !b.hit && 
-        b.x>-20 && b.x<canvas.width+20 && 
-        b.y>-20 && b.y<canvas.height+20 && 
-        Date.now()-b.t<8000
-    );
+      }));
+    }
+  }
 
-    if(socket.readyState===WebSocket.OPEN && IS_GAME_ACTIVE){
-        const serverBullets = bullets.map(b => ({
-            x: b.x, 
-            y: b.y, 
-            dx: b.dx, 
-            dy: b.dy
-        }));
-        
-        socket.send(JSON.stringify({
-            type:"update",
-            state:{
-                x:player.x, y:player.y,
-                vx:player.vx, vy:player.vy,
-                bullets: serverBullets
-            }
-        }));
-    }
-
-    if (IS_DEAD) {
-        const respawnRemaining = (player.deadUntil - Date.now()) / 1000;
-        cooldownText.textContent = ` | Respawning: ${Math.max(0, respawnRemaining).toFixed(1)}s`;
-    } else {
-        let cooldownTime = Math.max(0,SHOT_COOLDOWN_MS-(Date.now()-lastShot))/1000;
-        cooldownText.textContent = cooldownTime > 0 ? 
-            ` | Cooldown: ${cooldownTime.toFixed(2)}s` : ""; 
-    }
-    
-    hpText.textContent = Math.max(0, Math.round(player.displayHP));
-    
-    updateLeaderboard();
-    
-    if(isAdmin) {
-        updateAdminPlayerList();
-    }
+  if (IS_DEAD) {
+    const respawnRemaining = (player.deadUntil - Date.now()) / 1000;
+    cooldownText.textContent = ` | Respawning: ${Math.max(0, respawnRemaining).toFixed(1)}s`;
+  } else {
+    let cooldownTime = Math.max(0,SHOT_COOLDOWN_MS-(Date.now()-lastShot))/1000;
+    cooldownText.textContent = cooldownTime > 0 ? 
+      ` | Cooldown: ${cooldownTime.toFixed(2)}s` : ""; 
+  }
+  
+  // Update HP display with smooth animation
+  hpText.textContent = Math.max(0, Math.round(player.displayHP));
+  
+  // Update leaderboard
+  updateLeaderboard();
 }
 
 function updatePhysics(IS_DEAD, IS_GAME_ACTIVE) {
-    if(!IS_DEAD && IS_GAME_ACTIVE){
-        let moveX=0, moveY=0;
-        if(keys.w||keys.ArrowUp) moveY=-1;
-        if(keys.s||keys.ArrowDown) moveY=1;
-        if(keys.a||keys.ArrowLeft) moveX=-1;
-        if(keys.d||keys.ArrowRight) moveX=1;
+  if(!IS_DEAD && IS_GAME_ACTIVE){
+    let moveX=0, moveY=0;
+    if(keys.w||keys.ArrowUp) moveY=-1;
+    if(keys.s||keys.ArrowDown) moveY=1;
+    if(keys.a||keys.ArrowLeft) moveX=-1;
+    if(keys.d||keys.ArrowRight) moveX=1;
 
-        if(moveX||moveY){
-            const mag = Math.hypot(moveX, moveY)||1;
-            player.vx += (moveX/mag)*SPEED*0.3;
-            player.vy += (moveY/mag)*SPEED*0.3;
-        }
-    } else {
-        player.vx = 0;
-        player.vy = 0;
+    if(moveX||moveY){
+      const mag = Math.hypot(moveX, moveY)||1;
+      player.vx += (moveX/mag)*SPEED*0.3;
+      player.vy += (moveY/mag)*SPEED*0.3;
     }
-    
-    const newX = player.x + player.vx;
-    const newY = player.y + player.vy;
-    
-    if(!checkWallCollision(newX, player.y, PLAYER_SIZE)) {
-        player.x = newX;
-    } else {
-        player.vx = 0;
-    }
-    
-    if(!checkWallCollision(player.x, newY, PLAYER_SIZE)) {
-        player.y = newY;
-    } else {
-        player.vy = 0;
-    }
-    
-    player.vx *= FRICTION; 
-    player.vy *= FRICTION;
-    
-    player.x = Math.max(PLAYER_SIZE + 20, Math.min(canvas.width - PLAYER_SIZE - 20, player.x));
-    player.y = Math.max(PLAYER_SIZE + 20, Math.min(canvas.height - PLAYER_SIZE - 20, player.y));
+  } else {
+    player.vx = 0;
+    player.vy = 0;
+  }
+  
+  // Apply movement with wall collision
+  const newX = player.x + player.vx;
+  const newY = player.y + player.vy;
+  
+  // Check X collision
+  if(!checkWallCollision(newX, player.y, PLAYER_SIZE)) {
+      player.x = newX;
+  } else {
+      player.vx = 0;
+  }
+  
+  // Check Y collision
+  if(!checkWallCollision(player.x, newY, PLAYER_SIZE)) {
+      player.y = newY;
+  } else {
+      player.vy = 0;
+  }
+  
+  player.vx *= FRICTION; 
+  player.vy *= FRICTION;
+  
+  // Keep player within bounds
+  player.x = Math.max(PLAYER_SIZE + 20, Math.min(canvas.width - PLAYER_SIZE - 20, player.x));
+  player.y = Math.max(PLAYER_SIZE + 20, Math.min(canvas.height - PLAYER_SIZE - 20, player.y));
 }
 
 function updateLeaderboard() {
@@ -1277,6 +1153,7 @@ function updateLeaderboard() {
         kills: player.kills || 0
     }];
     
+    // Add all other players
     for(const id in otherPlayers) {
         allPlayers.push({
             id: id,
@@ -1285,8 +1162,10 @@ function updateLeaderboard() {
         });
     }
     
+    // Sort by kills (highest first)
     allPlayers.sort((a, b) => b.kills - a.kills);
     
+    // Display top 10
     leaderboardList.innerHTML = allPlayers.slice(0, 10).map((p, i) => 
         `<div class="leaderboard-entry ${p.id === player.id ? 'me' : ''}">
             <span>${i+1}. ${p.username}</span>
@@ -1300,10 +1179,12 @@ function drawPlayer(p, isMe) {
     const x = p.renderX;
     const y = p.renderY;
     
+    // Draw larger gray rectangle if dead/on cooldown
     if (isCooldown) {
         ctx.fillStyle = `rgba(100, 100, 100, 0.4)`;
         ctx.fillRect(x - PLAYER_SIZE - 5, y - PLAYER_SIZE - 5, (PLAYER_SIZE + 5) * 2, (PLAYER_SIZE + 5) * 2);
 
+        // Draw cooldown progress bar
         const cooldownTotal = RESP_COOLDOWN_MS;
         const cooldownElapsed = Date.now() - (p.deadUntil - cooldownTotal);
         const ratio = Math.min(1, Math.max(0, cooldownElapsed / cooldownTotal));
@@ -1314,34 +1195,58 @@ function drawPlayer(p, isMe) {
         ctx.strokeRect(x - PLAYER_SIZE - 5, y - PLAYER_SIZE - 5, barWidth, (PLAYER_SIZE + 5) * 2);
     }
     
+    // Draw the player as a rectangle/block
     ctx.fillStyle = p.color;
     ctx.fillRect(x - PLAYER_SIZE, y - PLAYER_SIZE, PLAYER_SIZE * 2, PLAYER_SIZE * 2);
+    
+    // Santa hat
+    ctx.fillStyle = "red";
+    ctx.beginPath();
+    ctx.moveTo(x - 12, y - PLAYER_SIZE - 2);
+    ctx.lineTo(x + 12, y - PLAYER_SIZE - 2);
+    ctx.lineTo(x, y - PLAYER_SIZE - 18);
+    ctx.closePath();
+    ctx.fill();
 
+    ctx.fillStyle = "white";
+    ctx.beginPath();
+    ctx.arc(x, y - PLAYER_SIZE - 18, 4, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillRect(x - 12, y - PLAYER_SIZE - 2, 24, 4);
+
+    // Draw Health Bar - Use displayHP for smooth animation
     const currentHP = Math.max(0, Math.min(PLAYER_MAX_HP, p.displayHP || p.hp));
     const hpPercent = currentHP / PLAYER_MAX_HP;
     
+    // Red background
     ctx.fillStyle = '#8B0000';
     ctx.fillRect(x - 20, y - PLAYER_SIZE - 10, 40, 5);
     
+    // Health bar color based on HP percentage (smooth gradient)
     if(hpPercent > 0.5) {
-        ctx.fillStyle = '#00ff00';
+        ctx.fillStyle = '#00ff00'; // Bright green
     } else if(hpPercent > 0.25) {
-        ctx.fillStyle = '#ffff00';
+        ctx.fillStyle = '#ffff00'; // Yellow
     } else if(hpPercent > 0) {
-        ctx.fillStyle = '#ff8800';
+        ctx.fillStyle = '#ff8800'; // Orange
     }
     
+    // Only draw health bar if HP > 0
     if(currentHP > 0) {
         const healthWidth = hpPercent * 40;
         ctx.fillRect(x - 20, y - PLAYER_SIZE - 10, healthWidth, 5);
     }
 
+    // Draw Username
     ctx.fillStyle = '#fff';
     ctx.font = '12px Arial';
     ctx.textAlign = 'center';
     ctx.fillText(p.username, x, y - PLAYER_SIZE - 15);
 
+    // Draw bullets for this player
     if (isMe) {
+        // Draw own bullets
         bullets.forEach(b => {
             ctx.fillStyle = '#ff5722';
             ctx.beginPath();
@@ -1349,6 +1254,7 @@ function drawPlayer(p, isMe) {
             ctx.fill();
         });
     } else {
+        // Draw other player's bullets
         if(p.bullets && Array.isArray(p.bullets)) {
             p.bullets.forEach(b => {
                 ctx.fillStyle = '#ff5722';
@@ -1361,36 +1267,65 @@ function drawPlayer(p, isMe) {
 }
 
 function draw(){
-    ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  drawSnow();
 
-    if(startupScreen.style.display !== 'none') return;
+  if(startupScreen.style.display !== 'none') return;
 
-    ctx.fillStyle = 'rgba(68, 204, 221, 0.6)';
-    ctx.font = 'bold 16px Arial';
-    ctx.textAlign = 'center';
-    ctx.fillText(MAPS[currentMapIndex].name, canvas.width / 2, 40);
+  // Draw map name
+  ctx.fillStyle = 'rgba(68, 204, 221, 0.6)';
+  ctx.font = 'bold 16px Arial';
+  ctx.textAlign = 'center';
+  ctx.fillText(MAPS[currentMapIndex].name, canvas.width / 2, 40);
 
-    WALLS.forEach(wall => {
-        ctx.fillStyle = wall.color;
-        ctx.fillRect(wall.x, wall.y, wall.width, wall.height);
-        
-        ctx.strokeStyle = '#1a252f';
-        ctx.lineWidth = 2;
-        ctx.strokeRect(wall.x, wall.y, wall.width, wall.height);
+  // Draw map walls
+  WALLS.forEach(wall => {
+      ctx.fillStyle = wall.color;
+      ctx.fillRect(wall.x, wall.y, wall.width, wall.height);
+      
+      // Add border for depth
+      ctx.strokeStyle = '#1a252f';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(wall.x, wall.y, wall.width, wall.height);
+  });
+
+  for(const id in otherPlayers){
+    const p = otherPlayers[id];
+    drawPlayer(p, false);
+  }
+  
+  drawPlayer(player, true);
+}
+// Snow effect
+let snowflakes = [];
+for (let i = 0; i < 120; i++) {
+    snowflakes.push({
+        x: Math.random()*canvas.width,
+        y: Math.random()*canvas.height,
+        size: Math.random()*3+1,
+        speed: Math.random()*1+0.5
     });
+}
 
-    for(const id in otherPlayers){
-        const p = otherPlayers[id];
-        drawPlayer(p, false);
+function drawSnow() {
+    ctx.fillStyle = "white";
+    for (let f of snowflakes) {
+        ctx.beginPath();
+        ctx.arc(f.x, f.y, f.size, 0, Math.PI*2);
+        ctx.fill();
+
+        f.y += f.speed;
+        if (f.y > canvas.height) {
+            f.y = -5;
+            f.x = Math.random()*canvas.width;
+        }
     }
-    
-    drawPlayer(player, true);
 }
 
 function gameLoop(){
-    update();
-    draw();
-    requestAnimationFrame(gameLoop);
+  update();
+  draw();
+  requestAnimationFrame(gameLoop);
 }
 
 gameLoop();
