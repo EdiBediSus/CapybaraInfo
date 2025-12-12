@@ -413,35 +413,17 @@ canvas {
     </div>
 </div>
 
-<button id="shootBtn" style="
-    position: fixed;
-    bottom: 40px;
-    right: 40px;
-    width: 110px;
-    height: 110px;
-    background: rgba(255,80,80,0.4);
-    border-radius: 50%;
-    border: 3px solid rgba(255,255,255,0.5);
-    backdrop-filter: blur(6px);
-    font-size: 0;
-">
-</button>
-
-
 
 
 <script>
 (function(){
 
-  // --- Make sure these exist globally ---
-  const canvas = document.getElementById("game");
-  const chatInput = document.getElementById("chatInput");
-
-  if (!window.keys) window.keys = { w:false, a:false, s:false, d:false };
+  // --- GLOBAL KEYS ---
+  window.keys = window.keys || { w:false, a:false, s:false, d:false };
+  const keys = window.keys;
 
   const joy = document.getElementById('joy');
   const stick = document.getElementById('stick');
-  const shootBtn = document.getElementById('shootBtn');
 
   // Detect touch device
   function isTouch() {
@@ -453,7 +435,7 @@ canvas {
     return;
   }
 
-  // Joystick Data
+  // Joystick variables
   let activeId = null;
   const outerRadius = 70;
   const center = { x:0, y:0 };
@@ -464,14 +446,36 @@ canvas {
     activeId = null;
   }
 
+  function moveStick(x, y) {
+    const dx = x - center.x;
+    const dy = y - center.y;
+    const dist = Math.min(Math.hypot(dx, dy), outerRadius);
+    const angle = Math.atan2(dy, dx);
+
+    const sx = Math.cos(angle) * dist;
+    const sy = Math.sin(angle) * dist;
+
+    stick.style.transform = `translate(calc(-50% + ${sx}px), calc(-50% + ${sy}px))`;
+
+    // Map stick movement to keys
+    const nx = sx / outerRadius;
+    const ny = sy / outerRadius;
+    const t = 0.35; // deadzone threshold
+
+    keys.w = ny < -t;
+    keys.s = ny > t;
+    keys.a = nx < -t;
+    keys.d = nx > t;
+  }
+
   joy.addEventListener("touchstart", e => {
     e.preventDefault();
     const t = e.changedTouches[0];
     activeId = t.identifier;
 
     const rect = joy.getBoundingClientRect();
-    center.x = rect.left + rect.width/2;
-    center.y = rect.top + rect.height/2;
+    center.x = rect.left + rect.width / 2;
+    center.y = rect.top + rect.height / 2;
 
     moveStick(t.clientX, t.clientY);
   }, {passive:false});
@@ -489,67 +493,8 @@ canvas {
     }
   });
 
-  function moveStick(x, y) {
-    const dx = x - center.x;
-    const dy = y - center.y;
-    const dist = Math.min(Math.hypot(dx,dy), outerRadius);
-    const angle = Math.atan2(dy, dx);
-
-    const sx = Math.cos(angle)*dist;
-    const sy = Math.sin(angle)*dist;
-
-    stick.style.transform = `translate(calc(-50% + ${sx}px), calc(-50% + ${sy}px))`;
-
-    // Movement
-    const nx = sx/outerRadius;
-    const ny = sy/outerRadius;
-
-    const t = 0.35;
-
-    keys.w = ny < -t;
-    keys.s = ny > t;
-    keys.a = nx < -t;
-    keys.d = nx > t;
-  }
-
-  // SHOOT BUTTON
-  shootBtn.addEventListener("touchstart", e => {
-    e.preventDefault();
-    const t = e.changedTouches[0];
-
-    const rect = canvas.getBoundingClientRect();
-    const mx = t.clientX - rect.left;
-    const my = t.clientY - rect.top;
-
-    if (!window.player) return;
-    if (player.deadUntil > Date.now()) return;
-
-    const angle = Math.atan2(my - player.y, mx - player.x);
-    const dx = Math.cos(angle)*BULLET_SPEED;
-    const dy = Math.sin(angle)*BULLET_SPEED;
-
-    // Send to server
-    if (socket.readyState === WebSocket.OPEN) {
-      socket.send(JSON.stringify({
-        type:"shoot",
-        angle: angle,
-        x: player.x,
-        y: player.y
-      }));
-    }
-
-    // Local bullet
-    bullets.push({x:player.x, y:player.y, dx, dy, t:Date.now(), owner:player.id});
-    player.vx -= dx*0.02;
-    player.vy -= dy*0.02;
-
-    shootBtn.style.transform = "scale(0.92)";
-    setTimeout(() => shootBtn.style.transform = "", 100);
-  }, {passive:false});
-
 })();
 </script>
-
 
 
 <script>
