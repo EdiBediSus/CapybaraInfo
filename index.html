@@ -368,223 +368,128 @@ canvas {
 
 <canvas id="game"></canvas>
 
-<!-- MOBILE CONTROLS -->
-<style>
-  /* Mobile UI */
-  #mobileControls { position: absolute; left: 0; top: 0; width: 100%; height: 100%; pointer-events: none; z-index: 500; }
-  .joystick {
-    position: absolute;
-    left: 20px;
-    bottom: 20px;
-    width: 140px;
-    height: 140px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.03);
-    box-shadow: 0 6px 18px rgba(0,0,0,0.4);
-    pointer-events: auto;
-    touch-action: none;
-  }
-  .joystick .stick {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.12);
-  }
 
-  .btnShoot {
-    position: absolute;
-    right: 20px;
-    bottom: 30px;
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    background: radial-gradient(circle at 30% 30%, rgba(255,87,34,0.95), rgba(255,87,34,0.8));
-    color: white;
-    font-weight: bold;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    pointer-events: auto;
-    touch-action: none;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.45);
-    font-size: 18px;
-  }
-
-  /* Hide on desktop */
-  .mobile-only { display: none; }
-  @media (pointer: coarse) {
-    .mobile-only { display: block; }
-    #chatInput, #usernameContainer, #usernameInput { font-size: 16px; }
-  }
-</style>
-
-<div id="mobileControls" class="mobile-only" aria-hidden="true">
-  <div id="joy" class="joystick" role="application" aria-label="Mobile joystick">
-    <div id="stick" class="stick"></div>
-  </div>
-  <div id="shootBtn" class="btnShoot mobile-only">FIRE</div>
-</div>
 
 <script>
-/* ===== Mobile controls implementation =====
-   - left joystick controls movement (sets keys.w/a/s/d)
-   - shoot button sends a socket 'shoot' or triggers local canvas click behavior
-*/
-
 (function(){
+
+  // --- Make sure these exist globally ---
+  const canvas = document.getElementById("game");
+  const chatInput = document.getElementById("chatInput");
+
+  if (!window.keys) window.keys = { w:false, a:false, s:false, d:false };
+
   const joy = document.getElementById('joy');
   const stick = document.getElementById('stick');
   const shootBtn = document.getElementById('shootBtn');
-  const canvasRect = canvas.getBoundingClientRect();
 
-  // Detect touch device and show controls
+  // Detect touch device
   function isTouch() {
-    return ('ontouchstart' in window) || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0;
+    return ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
   }
 
-  if(!isTouch()){
-    // hide mobileControls if not touch
+  if (!isTouch()) {
     document.getElementById('mobileControls').style.display = 'none';
     return;
   }
 
-  // Joystick state
+  // Joystick Data
   let activeId = null;
-  let baseX = 0, baseY = 0;
-  const radius = 56; // stick radius (half of stick container approx)
-  const outerRadius = 70; // radius inside which we move stick
-  const center = { x: 0, y: 0 };
+  const outerRadius = 70;
+  const center = { x:0, y:0 };
 
   function resetStick() {
     stick.style.transform = 'translate(-50%, -50%)';
-    activeId = null;
-    // release movement keys
     keys.w = keys.a = keys.s = keys.d = false;
+    activeId = null;
   }
 
-  joy.addEventListener('touchstart', function(e){
+  joy.addEventListener("touchstart", e => {
     e.preventDefault();
     const t = e.changedTouches[0];
     activeId = t.identifier;
+
     const rect = joy.getBoundingClientRect();
     center.x = rect.left + rect.width/2;
     center.y = rect.top + rect.height/2;
-    // position stick to touch
-    moveStickTo(t.clientX, t.clientY);
+
+    moveStick(t.clientX, t.clientY);
   }, {passive:false});
 
-  joy.addEventListener('touchmove', function(e){
+  joy.addEventListener("touchmove", e => {
     e.preventDefault();
-    for (let i=0;i<e.changedTouches.length;i++){
-      const t = e.changedTouches[i];
-      if (t.identifier !== activeId) continue;
-      moveStickTo(t.clientX, t.clientY);
+    for (let t of e.changedTouches) {
+      if (t.identifier === activeId) moveStick(t.clientX, t.clientY);
     }
   }, {passive:false});
 
-  joy.addEventListener('touchend', function(e){
-    for (let i=0;i<e.changedTouches.length;i++){
-      const t = e.changedTouches[i];
-      if (t.identifier === activeId) {
-        resetStick();
-      }
+  joy.addEventListener("touchend", e => {
+    for (let t of e.changedTouches) {
+      if (t.identifier === activeId) resetStick();
     }
-  }, {passive:false});
+  });
 
-  function moveStickTo(clientX, clientY){
-    const dx = clientX - center.x;
-    const dy = clientY - center.y;
-    const dist = Math.hypot(dx, dy);
-    const max = outerRadius;
-    const clampDist = Math.min(dist, max);
+  function moveStick(x, y) {
+    const dx = x - center.x;
+    const dy = y - center.y;
+    const dist = Math.min(Math.hypot(dx,dy), outerRadius);
     const angle = Math.atan2(dy, dx);
 
-    const stickX = Math.cos(angle) * clampDist;
-    const stickY = Math.sin(angle) * clampDist;
+    const sx = Math.cos(angle)*dist;
+    const sy = Math.sin(angle)*dist;
 
-    // visually move stick (translate from center)
-    stick.style.transform = `translate(calc(-50% + ${stickX}px), calc(-50% + ${stickY}px))`;
+    stick.style.transform = `translate(calc(-50% + ${sx}px), calc(-50% + ${sy}px))`;
 
-    // derive normalized direction and set keys
-    const nx = (clampDist === 0) ? 0 : (stickX / max);
-    const ny = (clampDist === 0) ? 0 : (stickY / max);
+    // Movement
+    const nx = sx/outerRadius;
+    const ny = sy/outerRadius;
 
-    // threshold to consider as axis pressed
-    const thr = 0.35;
+    const t = 0.35;
 
-    keys.w = (ny < -thr);
-    keys.s = (ny > thr);
-    keys.a = (nx < -thr);
-    keys.d = (nx > thr);
+    keys.w = ny < -t;
+    keys.s = ny > t;
+    keys.a = nx < -t;
+    keys.d = nx > t;
   }
 
-  // Shoot button
-  shootBtn.addEventListener('touchstart', function(e){
+  // SHOOT BUTTON
+  shootBtn.addEventListener("touchstart", e => {
     e.preventDefault();
-    // emulate a click at direction of last touch on right half (or center of screen)
-    // We will fire toward the center-right of screen (or towards last touch)
-    // Simpler: shoot in the direction the player is facing (mouseless) — send angle 0
-    // Better: use the touch position to aim:
     const t = e.changedTouches[0];
+
     const rect = canvas.getBoundingClientRect();
     const mx = t.clientX - rect.left;
     const my = t.clientY - rect.top;
+
+    if (!window.player) return;
+    if (player.deadUntil > Date.now()) return;
+
     const angle = Math.atan2(my - player.y, mx - player.x);
-
-    // Reuse shooting code: send socket shoot and add local bullet
-    if (player.deadUntil > Date.now() || startupScreen.style.display !== 'none') return;
-    const now = Date.now();
-    if(now - lastShot < SHOT_COOLDOWN_MS) return;
-    lastShot = now;
-
     const dx = Math.cos(angle)*BULLET_SPEED;
     const dy = Math.sin(angle)*BULLET_SPEED;
 
-    // send to server
-    try {
-      if(socket && socket.readyState === WebSocket.OPEN){
-        socket.send(JSON.stringify({
-          type:"shoot",
-          angle: angle,
-          x: player.x,
-          y: player.y
-        }));
-      }
-    } catch(e){}
+    // Send to server
+    if (socket.readyState === WebSocket.OPEN) {
+      socket.send(JSON.stringify({
+        type:"shoot",
+        angle: angle,
+        x: player.x,
+        y: player.y
+      }));
+    }
 
-    bullets.push({x:player.x,y:player.y,dx,dy,t:Date.now(),owner:player.id});
+    // Local bullet
+    bullets.push({x:player.x, y:player.y, dx, dy, t:Date.now(), owner:player.id});
     player.vx -= dx*0.02;
     player.vy -= dy*0.02;
 
-    // brief visual press
-    shootBtn.style.transform = 'scale(0.95)';
-    setTimeout(()=> shootBtn.style.transform = '', 80);
+    shootBtn.style.transform = "scale(0.92)";
+    setTimeout(() => shootBtn.style.transform = "", 100);
   }, {passive:false});
 
-  // Also support tapping the right half of the screen to shoot (common in mobile shooters)
-  document.addEventListener('touchstart', function(e){
-    if (!e.changedTouches || e.changedTouches.length===0) return;
-    const t = e.changedTouches[0];
-    const rect = canvas.getBoundingClientRect();
-    // if touch is on the right half and not inside UI buttons, shoot
-    if (t.clientX > (rect.left + rect.width/2) && t.clientY > rect.top && t.clientY < rect.bottom) {
-      // avoid double-shoot if it's the shootBtn touch (it already handled)
-      // small timeout to avoid double-firing
-      setTimeout(()=>{}, 0);
-      // Do nothing here because shootBtn handles it, but keep for fallback.
-    }
-  }, {passive:true});
-
-  // Resize handler so joystick positions remain correct
-  window.addEventListener('resize', ()=> {
-    // nothing heavy needed; center recalculated on touchstart
-  });
 })();
 </script>
+
 
 
 <script>
