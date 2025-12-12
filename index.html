@@ -432,38 +432,40 @@ canvas {
 
 <script>
 (function() {
-
-  // Detect touch devices
   const isTouch = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+  const canvas = document.querySelector('canvas'); // Your game canvas
+
   if (!isTouch) {
     document.getElementById('mobileControls').style.display = 'none';
     document.getElementById('shootButton').style.display = 'none';
     return;
   }
 
-  const canvas = document.querySelector('canvas'); // your game canvas
-  const shootBtn = document.getElementById('shootButton');
-  const joy = document.getElementById('joy');
-  const stick = document.getElementById('stick');
+  // --- FULLSCREEN PORTRAIT STYLE ---
+  document.documentElement.style.height = "100%";
+  document.body.style.height = "100%";
+  document.body.style.margin = 0;
+  document.body.style.overflow = "hidden";
+  if (canvas) {
+    canvas.style.width = "100vw";
+    canvas.style.height = "100vh";
+    canvas.style.touchAction = "none"; // prevent default gestures
+  }
 
   // --- SHOOT BUTTON ---
+  const shootBtn = document.getElementById('shootButton');
   shootBtn.addEventListener('touchstart', e => {
     e.preventDefault();
     if (canvas) {
-      const clickEvent = new MouseEvent('mousedown', { bubbles:true, cancelable:true, view:window });
+      const clickEvent = new MouseEvent('click', { bubbles:true, cancelable:true, view:window });
       canvas.dispatchEvent(clickEvent);
     }
   }, {passive:false});
 
-  shootBtn.addEventListener('touchend', e => {
-    e.preventDefault();
-    if (canvas) {
-      const releaseEvent = new MouseEvent('mouseup', { bubbles:true, cancelable:true, view:window });
-      canvas.dispatchEvent(releaseEvent);
-    }
-  }, {passive:false});
-
   // --- JOYSTICK ---
+  const joy = document.getElementById('joy');
+  const stick = document.getElementById('stick');
+
   let activeId = null;
   const outerRadius = 70;
   const center = { x:0, y:0 };
@@ -504,11 +506,9 @@ canvas {
 
     const nx = sx / outerRadius;
     const ny = sy / outerRadius;
-    const t = 0.35; // deadzone
+    const t = 0.35;
 
-    // release all keys first
     ['w','a','s','d'].forEach(releaseKey);
-
     if (ny < -t) pressKey('w');
     if (ny > t) pressKey('s');
     if (nx < -t) pressKey('a');
