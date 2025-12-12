@@ -432,6 +432,13 @@ canvas {
 
 <script>
 (function(){
+    // Detect touch device
+    const isTouch = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+    if(!isTouch){
+        document.getElementById('mobileControls').style.display = 'none';
+        document.getElementById('shootButton').style.display = 'none';
+        return;
+    }
 
     // --- GLOBAL KEYS ---
     window.keys = window.keys || { w:false, a:false, s:false, d:false };
@@ -441,16 +448,6 @@ canvas {
     const stick = document.getElementById('stick');
     const shootBtn = document.getElementById('shootButton');
     const canvas = document.querySelector('canvas'); // Make sure this is your game canvas
-
-    // Detect touch device
-    function isTouch() {
-        return ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
-    }
-
-    if (!isTouch()) {
-        document.getElementById('mobileControls').style.display = 'none';
-        return;
-    }
 
     // --- JOYSTICK LOGIC ---
     let activeId = null;
@@ -510,29 +507,22 @@ canvas {
     });
 
     // --- SHOOT BUTTON LOGIC ---
-    function shootStart() {
-        // Trigger click on canvas
-        const event = new MouseEvent('mousedown', { bubbles: true });
-        canvas.dispatchEvent(event);
-    }
-
-    function shootEnd() {
-        const event = new MouseEvent('mouseup', { bubbles: true });
-        canvas.dispatchEvent(event);
-    }
-
     shootBtn.addEventListener('touchstart', e => {
         e.preventDefault();
-        shootStart();
+        // Trigger pointerdown or mousedown on canvas
+        const event = new PointerEvent('pointerdown', { bubbles: true });
+        canvas.dispatchEvent(event);
     }, {passive:false});
 
     shootBtn.addEventListener('touchend', e => {
         e.preventDefault();
-        shootEnd();
+        const event = new PointerEvent('pointerup', { bubbles: true });
+        canvas.dispatchEvent(event);
     }, {passive:false});
 
 })();
 </script>
+
 
 
 
