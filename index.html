@@ -381,24 +381,20 @@ canvas {
 
 <canvas id="game"></canvas>
 
-
 <!-- MOBILE CONTROLS -->
-<div id="mobileControls" style="
-    position: fixed;
-    bottom: 20px;
-    left: 20px;
-    width: 140px;
-    height: 140px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.07);
-    backdrop-filter: blur(6px);
-    border: 2px solid rgba(255,255,255,0.2);
-">
-    <div id="joy" style="
+<div id="mobileControlsWrapper" style="position: fixed; bottom: 20px; left: 20px; width: 220px; height: 140px; z-index: 1000; pointer-events: none;">
+    <!-- Joystick -->
+    <div id="joystick" style="
         position: absolute;
-        width: 100%;
-        height: 100%;
+        bottom: 0;
+        left: 0;
+        width: 140px;
+        height: 140px;
         border-radius: 50%;
+        background: rgba(255,255,255,0.07);
+        backdrop-filter: blur(6px);
+        border: 2px solid rgba(255,255,255,0.2);
+        pointer-events: auto;
     ">
         <div id="stick" style="
             width: 60px;
@@ -411,89 +407,116 @@ canvas {
             transform: translate(-50%, -50%);
         "></div>
     </div>
+
+    <!-- Shoot button -->
+    <div id="shootButton" style="
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 80px;
+        height: 80px;
+        background: rgba(255,80,80,0.4);
+        border-radius: 50%;
+        border: 3px solid rgba(255,255,255,0.5);
+        backdrop-filter: blur(6px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        color: white;
+        pointer-events: auto;
+        user-select: none;
+    ">⚡</div>
 </div>
 
 
 
+
 <script>
-(function(){
+(function() {
+    const joy = document.getElementById('joystick');
+    const stick = document.getElementById('stick');
+    const shootBtn = document.getElementById('shootButton');
 
-  // --- GLOBAL KEYS ---
-  window.keys = window.keys || { w:false, a:false, s:false, d:false };
-  const keys = window.keys;
-
-  const joy = document.getElementById('joy');
-  const stick = document.getElementById('stick');
-
-  // Detect touch device
-  function isTouch() {
-    return ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
-  }
-
-  if (!isTouch()) {
-    document.getElementById('mobileControls').style.display = 'none';
-    return;
-  }
-
-  // Joystick variables
-  let activeId = null;
-  const outerRadius = 70;
-  const center = { x:0, y:0 };
-
-  function resetStick() {
-    stick.style.transform = 'translate(-50%, -50%)';
-    keys.w = keys.a = keys.s = keys.d = false;
-    activeId = null;
-  }
-
-  function moveStick(x, y) {
-    const dx = x - center.x;
-    const dy = y - center.y;
-    const dist = Math.min(Math.hypot(dx, dy), outerRadius);
-    const angle = Math.atan2(dy, dx);
-
-    const sx = Math.cos(angle) * dist;
-    const sy = Math.sin(angle) * dist;
-
-    stick.style.transform = `translate(calc(-50% + ${sx}px), calc(-50% + ${sy}px))`;
-
-    // Map stick movement to keys
-    const nx = sx / outerRadius;
-    const ny = sy / outerRadius;
-    const t = 0.35; // deadzone threshold
-
-    keys.w = ny < -t;
-    keys.s = ny > t;
-    keys.a = nx < -t;
-    keys.d = nx > t;
-  }
-
-  joy.addEventListener("touchstart", e => {
-    e.preventDefault();
-    const t = e.changedTouches[0];
-    activeId = t.identifier;
-
-    const rect = joy.getBoundingClientRect();
-    center.x = rect.left + rect.width / 2;
-    center.y = rect.top + rect.height / 2;
-
-    moveStick(t.clientX, t.clientY);
-  }, {passive:false});
-
-  joy.addEventListener("touchmove", e => {
-    e.preventDefault();
-    for (let t of e.changedTouches) {
-      if (t.identifier === activeId) moveStick(t.clientX, t.clientY);
+    if (!('ontouchstart' in window)) {
+        // Dacă nu e touch device, ascunde controalele
+        document.getElementById('mobileControlsWrapper').style.display = 'none';
+        return;
     }
-  }, {passive:false});
 
-  joy.addEventListener("touchend", e => {
-    for (let t of e.changedTouches) {
-      if (t.identifier === activeId) resetStick();
+    window.keys = window.keys || {};
+    
+    // --- Joystick ---
+    let activeId = null;
+    const outerRadius = 70;
+    const center = {x:0, y:0};
+
+    function resetStick() {
+        stick.style.transform = 'translate(-50%, -50%)';
+        keys.w = keys.a = keys.s = keys.d = false;
+        activeId = null;
     }
-  });
+
+    joy.addEventListener("touchstart", e => {
+        e.preventDefault();
+        const t = e.changedTouches[0];
+        activeId = t.identifier;
+
+        const rect = joy.getBoundingClientRect();
+        center.x = rect.left + rect.width / 2;
+        center.y = rect.top + rect.height / 2;
+
+        moveStick(t.clientX, t.clientY);
+    }, {passive:false});
+
+    joy.addEventListener("touchmove", e => {
+        e.preventDefault();
+        for (let t of e.changedTouches) {
+            if (t.identifier === activeId) moveStick(t.clientX, t.clientY);
+        }
+    }, {passive:false});
+
+    joy.addEventListener("touchend", e => {
+        for (let t of e.changedTouches) {
+            if (t.identifier === activeId) resetStick();
+        }
+    });
+
+    function moveStick(x, y) {
+        const dx = x - center.x;
+        const dy = y - center.y;
+        const dist = Math.min(Math.hypot(dx, dy), outerRadius);
+        const angle = Math.atan2(dy, dx);
+
+        const sx = Math.cos(angle) * dist;
+        const sy = Math.sin(angle) * dist;
+
+        stick.style.transform = `translate(calc(-50% + ${sx}px), calc(-50% + ${sy}px))`;
+
+        const nx = sx / outerRadius;
+        const ny = sy / outerRadius;
+        const threshold = 0.35;
+
+        keys.w = ny < -threshold;
+        keys.s = ny > threshold;
+        keys.a = nx < -threshold;
+        keys.d = nx > threshold;
+    }
+
+    // --- Shoot button ---
+    shootBtn.addEventListener("touchstart", e => {
+        e.preventDefault();
+        if (!window.keys) window.keys = {};
+        window.keys.space = true;
+    }, {passive:false});
+
+    shootBtn.addEventListener("touchend", e => {
+        e.preventDefault();
+        window.keys.space = false;
+    }, {passive:false});
 
 })();
+
 </script>
 
 
