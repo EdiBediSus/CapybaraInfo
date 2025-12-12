@@ -431,33 +431,63 @@ canvas {
 </div>
 
 <script>
-(function(){
+(function() {
 
-  // Show controls only on mobile
-  function isTouch() {
-    return ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
-  }
-
-  if (!isTouch()) {
+  // Detect touch devices
+  const isTouch = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+  if (!isTouch) {
     document.getElementById('mobileControls').style.display = 'none';
     document.getElementById('shootButton').style.display = 'none';
     return;
   }
 
+  const canvas = document.querySelector('canvas'); // your game canvas
+  const shootBtn = document.getElementById('shootButton');
   const joy = document.getElementById('joy');
   const stick = document.getElementById('stick');
-  const shootBtn = document.getElementById('shootButton');
 
-  window.keys = window.keys || { w:false, a:false, s:false, d:false, space:false };
+  // --- SHOOT BUTTON ---
+  shootBtn.addEventListener('touchstart', e => {
+    e.preventDefault();
+    if (canvas) {
+      const clickEvent = new MouseEvent('mousedown', { bubbles:true, cancelable:true, view:window });
+      canvas.dispatchEvent(clickEvent);
+    }
+  }, {passive:false});
 
-  // --- Joystick ---
+  shootBtn.addEventListener('touchend', e => {
+    e.preventDefault();
+    if (canvas) {
+      const releaseEvent = new MouseEvent('mouseup', { bubbles:true, cancelable:true, view:window });
+      canvas.dispatchEvent(releaseEvent);
+    }
+  }, {passive:false});
+
+  // --- JOYSTICK ---
   let activeId = null;
   const outerRadius = 70;
   const center = { x:0, y:0 };
+  const keysPressed = { w:false, a:false, s:false, d:false };
+
+  function pressKey(key) {
+    if (!keysPressed[key]) {
+      const event = new KeyboardEvent('keydown', { key: key });
+      document.dispatchEvent(event);
+      keysPressed[key] = true;
+    }
+  }
+
+  function releaseKey(key) {
+    if (keysPressed[key]) {
+      const event = new KeyboardEvent('keyup', { key: key });
+      document.dispatchEvent(event);
+      keysPressed[key] = false;
+    }
+  }
 
   function resetStick() {
     stick.style.transform = 'translate(-50%, -50%)';
-    window.keys.w = window.keys.a = window.keys.s = window.keys.d = false;
+    ['w','a','s','d'].forEach(releaseKey);
     activeId = null;
   }
 
@@ -472,52 +502,43 @@ canvas {
 
     stick.style.transform = `translate(calc(-50% + ${sx}px), calc(-50% + ${sy}px))`;
 
-    // deadzone
     const nx = sx / outerRadius;
     const ny = sy / outerRadius;
-    const t = 0.35;
+    const t = 0.35; // deadzone
 
-    window.keys.w = ny < -t;
-    window.keys.s = ny > t;
-    window.keys.a = nx < -t;
-    window.keys.d = nx > t;
+    // release all keys first
+    ['w','a','s','d'].forEach(releaseKey);
+
+    if (ny < -t) pressKey('w');
+    if (ny > t) pressKey('s');
+    if (nx < -t) pressKey('a');
+    if (nx > t) pressKey('d');
   }
 
-  joy.addEventListener("touchstart", e => {
+  joy.addEventListener('touchstart', e => {
     e.preventDefault();
     const t = e.changedTouches[0];
     activeId = t.identifier;
 
     const rect = joy.getBoundingClientRect();
-    center.x = rect.left + rect.width / 2;
-    center.y = rect.top + rect.height / 2;
+    center.x = rect.left + rect.width/2;
+    center.y = rect.top + rect.height/2;
 
     moveStick(t.clientX, t.clientY);
   }, {passive:false});
 
-  joy.addEventListener("touchmove", e => {
+  joy.addEventListener('touchmove', e => {
     e.preventDefault();
     for (let t of e.changedTouches) {
       if (t.identifier === activeId) moveStick(t.clientX, t.clientY);
     }
   }, {passive:false});
 
-  joy.addEventListener("touchend", e => {
+  joy.addEventListener('touchend', e => {
     for (let t of e.changedTouches) {
       if (t.identifier === activeId) resetStick();
     }
   });
-
-  // --- Shoot Button ---
-  shootBtn.addEventListener('touchstart', e => {
-    e.preventDefault();
-    window.keys.space = true; // START shooting
-  }, {passive:false});
-
-  shootBtn.addEventListener('touchend', e => {
-    e.preventDefault();
-    window.keys.space = false; // STOP shooting
-  }, {passive:false});
 
 })();
 </script>
